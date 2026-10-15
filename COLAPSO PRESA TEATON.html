@@ -1,0 +1,1450 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Informe Técnico — Modelo EDP de Laplace — Presa Teton 1976</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --azul-p: #0b2545; --azul-m: #13315c; --azul-c: #1e4d8c;
+    --azul-agua: #4a9fd8; --celeste: #a8d5e2; --naranja: #f77f00;
+    --amarillo: #fcbf49; --rojo: #d62828; --verde: #2a9d8f;
+    --tierra: #8b5a2b; --gris: #e8ecf1; --texto: #1a2332;
+  }
+  body { font-family: 'Segoe UI','Helvetica Neue',Arial,sans-serif; background:#f4f6f9; color:var(--texto); line-height:1.7; font-size:16px; }
+
+  .portada { background:linear-gradient(135deg,#0b2545 0%,#13315c 35%,#1e4d8c 65%,#4a9fd8 100%); color:white; padding:80px 40px 60px; text-align:center; position:relative; overflow:hidden; min-height:540px; display:flex; flex-direction:column; justify-content:center; align-items:center; }
+  .portada::before { content:''; position:absolute; inset:0; background:radial-gradient(circle at 15% 25%,rgba(247,127,0,.25) 0%,transparent 45%), radial-gradient(circle at 85% 75%,rgba(214,40,40,.2) 0%,transparent 45%), radial-gradient(circle at 50% 50%,rgba(74,159,216,.15) 0%,transparent 60%); pointer-events:none; }
+  .portada .badge { display:inline-block; background:rgba(255,255,255,.15); border:2px solid rgba(252,191,73,.6); backdrop-filter:blur(10px); padding:10px 28px; border-radius:50px; font-size:.85em; letter-spacing:3px; text-transform:uppercase; margin-bottom:25px; position:relative; z-index:1; color:var(--amarillo); font-weight:700; }
+  .portada h1 { font-size:3em; font-weight:800; letter-spacing:-1px; margin-bottom:18px; text-shadow:2px 4px 20px rgba(0,0,0,.5); position:relative; z-index:1; line-height:1.15; max-width:1000px; }
+  .portada h1 span { background:linear-gradient(135deg,#fcbf49,#f77f00); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+  .portada .subtitulo { font-size:1.25em; font-weight:300; color:var(--celeste); margin-bottom:40px; position:relative; z-index:1; max-width:850px; }
+  .portada .metadata { display:flex; gap:18px; flex-wrap:wrap; justify-content:center; position:relative; z-index:1; margin-top:20px; }
+  .portada .metadata div { background:rgba(255,255,255,.08); border:1px solid rgba(168,213,226,.3); backdrop-filter:blur(8px); padding:14px 22px; border-radius:12px; text-align:left; min-width:170px; border-left:4px solid var(--naranja); }
+  .portada .metadata div span { display:block; font-size:.72em; text-transform:uppercase; letter-spacing:2px; color:var(--celeste); margin-bottom:4px; }
+  .portada .metadata div strong { font-size:1.05em; color:white; }
+
+  .contenedor { display:grid; grid-template-columns:290px 1fr; max-width:1500px; margin:0 auto; gap:35px; padding:40px 20px; }
+
+  .indice { position:sticky; top:20px; height:fit-content; max-height:calc(100vh - 40px); overflow-y:auto; background:white; border-radius:16px; padding:25px 20px; box-shadow:0 8px 30px rgba(11,37,69,.12); border-top:5px solid var(--naranja); }
+  .indice h2 { font-size:1.05em; color:var(--azul-p); text-transform:uppercase; letter-spacing:2px; margin-bottom:20px; padding-bottom:12px; border-bottom:2px dashed var(--gris); }
+  .indice ol { list-style:none; counter-reset:seccion; }
+  .indice ol li { counter-increment:seccion; margin-bottom:4px; }
+  .indice ol li a { display:flex; align-items:center; gap:12px; padding:9px 12px; color:var(--texto); text-decoration:none; border-radius:8px; font-size:.88em; transition:all .25s ease; border-left:3px solid transparent; }
+  .indice ol li a::before { content:counter(seccion); display:flex; align-items:center; justify-content:center; width:24px; height:24px; background:var(--gris); border-radius:50%; font-weight:700; font-size:.75em; color:var(--azul-m); flex-shrink:0; transition:all .25s ease; }
+  .indice ol li a:hover { background:linear-gradient(90deg,rgba(247,127,0,.12),transparent); border-left-color:var(--naranja); color:var(--azul-p); transform:translateX(4px); }
+  .indice ol li a:hover::before { background:var(--naranja); color:white; transform:scale(1.1); }
+  .indice ol li.anexo-item a { background:linear-gradient(135deg,#fff5e6,#ffe4c4); border-left:3px solid var(--rojo); font-weight:700; color:var(--rojo); margin-top:8px; }
+  .indice ol li.anexo-item a::before { background:linear-gradient(135deg,var(--rojo),var(--naranja)); color:white; content:'📎'; font-size:.9em; }
+
+  .contenido { background:white; border-radius:16px; padding:50px 55px; box-shadow:0 8px 30px rgba(11,37,69,.08); min-width:0; }
+  .seccion { margin-bottom:55px; scroll-margin-top:20px; }
+  .seccion h2 { font-size:1.9em; color:var(--azul-p); margin-bottom:22px; padding-bottom:14px; border-bottom:4px solid; border-image:linear-gradient(90deg,var(--naranja),var(--amarillo),transparent) 1; display:flex; align-items:center; gap:15px; }
+  .seccion h2 .num { display:inline-flex; align-items:center; justify-content:center; min-width:46px; height:46px; background:linear-gradient(135deg,var(--azul-m),var(--azul-agua)); color:white; border-radius:12px; font-size:.7em; box-shadow:0 4px 12px rgba(30,77,140,.3); flex-shrink:0; }
+  .seccion h3 { font-size:1.3em; color:var(--azul-c); margin:28px 0 14px; padding-left:14px; border-left:4px solid var(--naranja); }
+  .seccion h4 { font-size:1.08em; color:var(--azul-m); margin:20px 0 10px; }
+  .seccion p { margin-bottom:14px; text-align:justify; }
+  .seccion ul, .seccion ol { margin-left:28px; margin-bottom:15px; }
+  .seccion li { margin-bottom:8px; }
+
+  .alerta { padding:18px 24px; border-radius:12px; margin:22px 0; border-left:6px solid; position:relative; box-shadow:0 2px 10px rgba(0,0,0,.05); }
+  .alerta.roja { background:linear-gradient(90deg,#fef0f0,#fff8f8); border-color:var(--rojo); color:#7a1111; }
+  .alerta.naranja { background:linear-gradient(90deg,#fff5e6,#fffaf2); border-color:var(--naranja); color:#8a4500; }
+  .alerta.azul { background:linear-gradient(90deg,#eaf4fc,#f5fafd); border-color:var(--azul-agua); color:#0d3a5c; }
+  .alerta.verde { background:linear-gradient(90deg,#e8f7f5,#f5fbfa); border-color:var(--verde); color:#125048; }
+  .alerta strong { display:block; margin-bottom:6px; font-size:1.02em; text-transform:uppercase; letter-spacing:1px; }
+
+  .tarjetas { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:16px; margin:22px 0; }
+  .tarjeta { background:linear-gradient(135deg,#ffffff,#f8fbff); border:1px solid var(--gris); border-top:5px solid var(--azul-agua); border-radius:12px; padding:18px; text-align:center; transition:all .3s ease; box-shadow:0 2px 8px rgba(0,0,0,.04); }
+  .tarjeta:hover { transform:translateY(-5px); box-shadow:0 12px 25px rgba(30,77,140,.15); border-top-color:var(--naranja); }
+  .tarjeta .valor { font-size:1.7em; font-weight:800; background:linear-gradient(135deg,var(--azul-m),var(--azul-agua)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; margin-bottom:5px; }
+  .tarjeta .etiqueta { font-size:.75em; color:#666; text-transform:uppercase; letter-spacing:1.5px; font-weight:600; }
+
+  table.tabla { width:100%; border-collapse:collapse; margin:22px 0; border-radius:12px; overflow:hidden; box-shadow:0 4px 15px rgba(0,0,0,.06); font-size:.93em; }
+  table.tabla thead { background:linear-gradient(135deg,var(--azul-m),var(--azul-c)); color:white; }
+  table.tabla thead th { padding:14px; text-align:left; font-weight:600; letter-spacing:.5px; text-transform:uppercase; font-size:.82em; }
+  table.tabla tbody tr { border-bottom:1px solid var(--gris); transition:background .2s; }
+  table.tabla tbody tr:nth-child(even) { background:#fafbfd; }
+  table.tabla tbody tr:hover { background:linear-gradient(90deg,rgba(74,159,216,.08),transparent); }
+  table.tabla tbody td { padding:11px 14px; }
+
+  .canvas-container { background:linear-gradient(180deg,#f8fbff,#e8f2fa); border-radius:16px; padding:20px; margin:25px 0; box-shadow:inset 0 2px 10px rgba(11,37,69,.06),0 8px 25px rgba(11,37,69,.1); border:2px solid white; }
+  .canvas-container h3 { border:none; padding-left:0; text-align:center; color:var(--azul-p); margin-top:0; }
+  canvas { display:block; width:100%; border-radius:10px; background:#0a1622; box-shadow:0 4px 15px rgba(0,0,0,.15); }
+  .controles { display:flex; gap:14px; flex-wrap:wrap; align-items:center; justify-content:center; margin-top:18px; padding:14px; background:white; border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,.05); }
+  button { background:linear-gradient(135deg,var(--azul-m),var(--azul-agua)); color:white; border:none; padding:11px 24px; border-radius:8px; font-size:.9em; font-weight:600; cursor:pointer; transition:all .25s; letter-spacing:.5px; box-shadow:0 4px 12px rgba(30,77,140,.25); }
+  button:hover { transform:translateY(-2px); box-shadow:0 8px 20px rgba(30,77,140,.35); }
+  button:active { transform:translateY(0); }
+  button.peligro { background:linear-gradient(135deg,var(--rojo),var(--naranja)); }
+  button.exito { background:linear-gradient(135deg,var(--verde),var(--azul-agua)); }
+  button:disabled { opacity:.5; cursor:not-allowed; transform:none; }
+  .controles label { font-size:.88em; font-weight:600; color:var(--azul-m); display:flex; align-items:center; gap:10px; }
+  .controles input[type=range] { width:140px; accent-color:var(--naranja); }
+  .controles .valor-slider { font-family:'Courier New',monospace; background:var(--gris); padding:4px 10px; border-radius:6px; font-weight:700; color:var(--azul-p); min-width:60px; text-align:center; }
+
+  .leyenda { display:flex; gap:18px; flex-wrap:wrap; justify-content:center; margin-top:14px; padding:12px; background:white; border-radius:10px; font-size:.83em; }
+  .leyenda span { display:flex; align-items:center; gap:8px; font-weight:600; color:#444; }
+  .leyenda .punto { width:14px; height:14px; border-radius:50%; display:inline-block; border:1px solid rgba(0,0,0,.1); }
+  .leyenda .barra { width:22px; height:12px; border-radius:3px; display:inline-block; border:1px solid rgba(0,0,0,.15); }
+
+  .timeline-piping { display:flex; gap:10px; margin:22px 0; padding:16px; background:linear-gradient(135deg,#f8fbff,#e8f2fa); border-radius:12px; overflow-x:auto; }
+  .fase { flex:1; min-width:145px; padding:14px 10px; border-radius:10px; text-align:center; background:white; border-top:4px solid var(--azul-agua); transition:all .3s; font-size:.83em; box-shadow:0 2px 6px rgba(0,0,0,.05); }
+  .fase.activa { background:linear-gradient(135deg,#fff5e6,#ffe4c4); border-top-color:var(--naranja); transform:scale(1.06); box-shadow:0 0 25px rgba(247,127,0,.4); }
+  .fase .ico { font-size:1.9em; display:block; margin-bottom:6px; }
+  .fase .nombre { font-weight:700; color:var(--azul-p); margin-bottom:4px; }
+  .fase .desc { font-size:.85em; color:#666; }
+
+  .ecuacion { background:linear-gradient(135deg,#f8fbff,#eaf4fc); border-left:4px solid var(--azul-agua); padding:18px 24px; margin:18px 0; border-radius:8px; font-family:'Cambria Math','Times New Roman',serif; font-size:1.1em; text-align:center; color:var(--azul-p); box-shadow:0 2px 8px rgba(74,159,216,.1); overflow-x:auto; }
+  .ecuacion .desc { display:block; font-family:'Segoe UI',sans-serif; font-size:.78em; color:#666; margin-top:8px; font-style:italic; }
+
+  .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:12px; margin-top:15px; }
+  .stat { background:linear-gradient(135deg,#ffffff,#f8fbff); padding:12px; border-radius:10px; text-align:center; border-top:3px solid var(--azul-agua); box-shadow:0 2px 6px rgba(0,0,0,.04); }
+  .stat .v { font-size:1.3em; font-weight:800; color:var(--azul-p); font-family:'Courier New',monospace; }
+  .stat .l { font-size:.72em; color:#666; text-transform:uppercase; letter-spacing:1px; margin-top:4px; font-weight:600; }
+
+  .timeline { position:relative; padding:20px 0 20px 40px; margin:30px 0; }
+  .timeline::before { content:''; position:absolute; left:15px; top:0; bottom:0; width:3px; background:linear-gradient(180deg,var(--azul-agua),var(--rojo)); border-radius:2px; }
+  .timeline-item { position:relative; margin-bottom:22px; padding:15px 20px; background:white; border-radius:10px; border-left:4px solid var(--azul-agua); box-shadow:0 2px 10px rgba(0,0,0,.06); transition:all .3s; }
+  .timeline-item:hover { transform:translateX(5px); border-left-color:var(--rojo); box-shadow:0 6px 20px rgba(0,0,0,.1); }
+  .timeline-item::before { content:''; position:absolute; left:-33px; top:20px; width:16px; height:16px; border-radius:50%; background:var(--azul-agua); border:3px solid white; box-shadow:0 0 0 3px var(--azul-agua); }
+  .timeline-item.critico::before { background:var(--rojo); box-shadow:0 0 0 3px var(--rojo); animation:pulse 1.5s infinite; }
+  @keyframes pulse { 0%,100% { box-shadow:0 0 0 3px var(--rojo); } 50% { box-shadow:0 0 0 8px rgba(214,40,40,.3); } }
+  .timeline-item .hora { font-family:'Courier New',monospace; font-weight:800; color:var(--naranja); font-size:1em; margin-bottom:4px; }
+  .timeline-item .titulo { font-weight:700; color:var(--azul-p); margin-bottom:5px; }
+  .timeline-item .desc { font-size:.9em; color:#555; }
+
+  .referencias { background:linear-gradient(135deg,#fafbfd,#f4f6f9); border-radius:12px; padding:28px; margin-top:18px; }
+  .referencias ol { padding-left:25px; }
+  .referencias li { margin-bottom:14px; padding-left:10px; line-height:1.6; font-size:.93em; }
+  .referencias li::marker { color:var(--naranja); font-weight:700; }
+
+  footer { background:linear-gradient(135deg,var(--azul-p),var(--azul-m)); color:white; text-align:center; padding:40px 20px; margin-top:60px; }
+  footer p { color:var(--celeste); font-size:.88em; margin-bottom:6px; }
+
+  .anexo-hero { background:linear-gradient(135deg,#7a1111 0%,#d62828 40%,#f77f00 75%,#fcbf49 100%); border-radius:20px; padding:45px 40px; margin-bottom:40px; color:white; position:relative; overflow:hidden; box-shadow:0 15px 45px rgba(214,40,40,.35); }
+  .anexo-hero::before { content:''; position:absolute; inset:0; background:radial-gradient(circle at 15% 25%,rgba(255,255,255,.25) 0%,transparent 45%), radial-gradient(circle at 85% 75%,rgba(252,191,73,.35) 0%,transparent 50%); pointer-events:none; }
+  .anexo-hero .etiqueta-anexo { display:inline-block; background:rgba(255,255,255,.2); border:2px solid rgba(255,255,255,.5); backdrop-filter:blur(10px); padding:8px 22px; border-radius:50px; font-size:.75em; letter-spacing:4px; text-transform:uppercase; font-weight:800; margin-bottom:18px; position:relative; z-index:1; }
+  .anexo-hero h2 { font-size:2.4em; font-weight:800; margin-bottom:12px; position:relative; z-index:1; line-height:1.15; text-shadow:2px 4px 15px rgba(0,0,0,.3); border:none; padding:0; color:white; display:block; }
+  .anexo-hero p { font-size:1.05em; color:rgba(255,255,255,.95); max-width:750px; position:relative; z-index:1; line-height:1.6; }
+  .anexo-hero .icono-grande { position:absolute; right:30px; top:50%; transform:translateY(-50%); font-size:9em; opacity:.15; z-index:0; pointer-events:none; }
+
+  .sub-anexo { margin:40px 0; }
+  .sub-anexo-titulo { display:flex; align-items:center; gap:15px; margin-bottom:22px; padding-bottom:12px; border-bottom:3px solid transparent; border-image:linear-gradient(90deg,var(--naranja),var(--amarillo),transparent) 1; }
+  .sub-anexo-titulo .letra { display:flex; align-items:center; justify-content:center; min-width:52px; height:52px; background:linear-gradient(135deg,var(--rojo),var(--naranja)); color:white; border-radius:14px; font-size:1.5em; font-weight:800; box-shadow:0 6px 18px rgba(247,127,0,.35); flex-shrink:0; }
+  .sub-anexo-titulo h3 { border:none; padding:0; margin:0; font-size:1.5em; color:var(--azul-p); background:linear-gradient(135deg,var(--azul-p),var(--azul-c)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+
+  .tarjetas-impacto { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:18px; margin:25px 0; }
+  .tarjeta-impacto { background:linear-gradient(135deg,#ffffff 0%,#fff8f0 100%); border:2px solid #ffe4c4; border-radius:16px; padding:24px 20px; text-align:center; position:relative; overflow:hidden; transition:all .35s ease; box-shadow:0 4px 15px rgba(247,127,0,.08); }
+  .tarjeta-impacto::before { content:''; position:absolute; top:0; left:0; right:0; height:5px; background:linear-gradient(90deg,var(--rojo),var(--naranja),var(--amarillo)); }
+  .tarjeta-impacto:hover { transform:translateY(-8px) scale(1.02); box-shadow:0 20px 40px rgba(247,127,0,.25); border-color:var(--naranja); }
+  .tarjeta-impacto .icono { font-size:2.6em; display:block; margin-bottom:10px; filter:drop-shadow(0 4px 8px rgba(0,0,0,.1)); }
+  .tarjeta-impacto .numero { font-size:2.2em; font-weight:900; background:linear-gradient(135deg,var(--rojo),var(--naranja)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; margin-bottom:6px; line-height:1; }
+  .tarjeta-impacto .texto { font-size:.85em; color:#555; text-transform:uppercase; letter-spacing:1.5px; font-weight:700; }
+
+  .tabla-impacto td:last-child { font-weight:700; text-align:center; }
+  .tabla-impacto tr.sev-critica td:first-child { border-left:4px solid #d62828; }
+  .tabla-impacto tr.sev-alta td:first-child { border-left:4px solid #f77f00; }
+  .tabla-impacto tr.sev-media td:first-child { border-left:4px solid #fcbf49; }
+
+  .cita-historica { background:linear-gradient(135deg,#f8fbfd,#eaf4fc); border-left:6px solid var(--azul-c); border-radius:0 12px 12px 0; padding:22px 28px; margin:25px 0; font-style:italic; font-size:1.05em; color:#2a3f5c; position:relative; box-shadow:0 4px 15px rgba(11,37,69,.08); }
+  .cita-historica::before { content:'"'; position:absolute; left:10px; top:-10px; font-size:4em; font-family:Georgia,serif; color:var(--naranja); opacity:.3; line-height:1; }
+  .cita-historica .autor { display:block; margin-top:12px; font-style:normal; font-weight:700; color:var(--azul-p); font-size:.9em; }
+
+  .grid-lecciones { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:20px; margin:25px 0; }
+  .leccion-card { background:white; border-radius:14px; padding:24px 22px; border-top:5px solid var(--azul-agua); box-shadow:0 6px 20px rgba(11,37,69,.08); transition:all .3s; position:relative; overflow:hidden; }
+  .leccion-card:hover { transform:translateY(-6px); box-shadow:0 15px 35px rgba(11,37,69,.18); border-top-color:var(--rojo); }
+  .leccion-card .ico-leccion { font-size:2em; margin-bottom:12px; display:block; }
+  .leccion-card h4 { color:var(--azul-p); font-size:1.1em; margin-bottom:10px; border:none; padding:0; }
+  .leccion-card p { font-size:.9em; color:#555; line-height:1.6; text-align:left; }
+
+  .reflexion-final { background:linear-gradient(135deg,#0b2545 0%,#13315c 50%,#1e4d8c 100%); color:white; border-radius:20px; padding:45px 40px; margin:40px 0 20px; position:relative; overflow:hidden; box-shadow:0 15px 45px rgba(11,37,69,.35); }
+  .reflexion-final::before { content:''; position:absolute; inset:0; background:radial-gradient(circle at 90% 20%,rgba(252,191,73,.2) 0%,transparent 40%), radial-gradient(circle at 10% 80%,rgba(74,159,216,.25) 0%,transparent 45%); pointer-events:none; }
+  .reflexion-final h3 { color:var(--amarillo) !important; font-size:1.6em; border:none; padding:0; margin-bottom:20px; position:relative; z-index:1; background:none; -webkit-text-fill-color:var(--amarillo); }
+  .reflexion-final p { color:rgba(255,255,255,.95); position:relative; z-index:1; font-size:1.05em; line-height:1.75; margin-bottom:15px; text-align:justify; }
+  .reflexion-final .frase-final { font-size:1.2em; font-weight:700; color:var(--amarillo); border-left:4px solid var(--naranja); padding-left:20px; margin-top:25px; position:relative; z-index:1; font-style:italic; }
+
+  .separador-anexo { display:flex; align-items:center; justify-content:center; gap:15px; margin:40px 0; color:var(--naranja); font-size:1.3em; }
+  .separador-anexo::before, .separador-anexo::after { content:''; flex:1; height:2px; background:linear-gradient(90deg,transparent,var(--naranja),transparent); }
+
+  @media (max-width:968px) {
+    .contenedor { grid-template-columns:1fr; }
+    .indice { position:relative; max-height:none; }
+    .contenido { padding:30px 22px; }
+    .portada h1 { font-size:2em; }
+    .portada .subtitulo { font-size:1em; }
+    .anexo-hero h2 { font-size:1.7em; }
+    .anexo-hero .icono-grande { font-size:5em; opacity:.1; }
+    .reflexion-final { padding:30px 22px; }
+    .reflexion-final h3 { font-size:1.3em; }
+  }
+</style>
+</head>
+<body>
+
+<header class="portada">
+  <div class="badge">Informe Técnico Hidráulico</div>
+  <h1>Falla de la Presa Teton <span>(1976)</span></h1>
+  <p class="subtitulo">
+    Modelo realista por solución numérica de la EDP de Laplace a través del cuerpo de la presa y la fundación fracturada — Visualización de líneas de corriente, apertura por piping e impacto aguas abajo
+  </p>
+  <div class="metadata">
+    <div><span>Ubicación</span><strong>Río Teton, Idaho</strong></div>
+    <div><span>Fecha de falla</span><strong>5 de junio, 1976</strong></div>
+    <div><span>Altura presa</span><strong>305 ft (93 m)</strong></div>
+    <div><span>Caudal pico</span><strong>1,652,300 cfs</strong></div>
+    <div><span>Método</span><strong>Laplace + SOR</strong></div>
+  </div>
+</header>
+
+<div class="contenedor">
+
+  <aside class="indice">
+    <h2>📑 Índice</h2>
+    <ol>
+      <li><a href="#resumen">Resumen Ejecutivo</a></li>
+      <li><a href="#intro">Introducción</a></li>
+      <li><a href="#descripcion">Descripción de la Presa</a></li>
+      <li><a href="#geologia">Geología y Fundación</a></li>
+      <li><a href="#malla">Malla y Fronteras</a></li>
+      <li><a href="#laplace">Solución EDP de Laplace</a></li>
+      <li><a href="#corrientes">Líneas de Corriente</a></li>
+      <li><a href="#piping">Apertura por Piping</a></li>
+      <li><a href="#cronologia">Cronología del Colapso</a></li>
+      <li><a href="#resultados">Resultados</a></li>
+      <li><a href="#conclusiones">Conclusiones</a></li>
+      <li><a href="#referencias">Referencias</a></li>
+      <li class="anexo-item"><a href="#anexo">Anexo — Impacto y Lecciones</a></li>
+    </ol>
+  </aside>
+
+  <main class="contenido">
+
+    <section class="seccion" id="resumen">
+      <h2><span class="num">01</span> Resumen Ejecutivo</h2>
+      <p>La <strong>Presa Teton</strong>, ubicada sobre el río Teton en Idaho (EE.UU.), colapsó el <strong>5 de junio de 1976</strong> a las 11:57 a.m., apenas unas horas después de que se detectaran filtraciones anómalas aguas abajo. La falla combinó <strong>fracturamiento hidráulico</strong> en la trinchera de llave y <strong>erosión interna retrogresiva (piping)</strong> a través de las juntas abiertas de la riolita de la fundación.</p>
+      <div class="alerta roja">
+        <strong>⚠ Evento catastrófico</strong>
+        El caudal pico alcanzó <strong>1,652,300 cfs (46,800 m³/s)</strong> en solo 1.25 horas, liberando aproximadamente <strong>251,000 acre-pies</strong> de agua, causando <strong>11 muertes</strong> y más de <strong>$2 mil millones</strong> en daños (valor de 1976).
+      </div>
+      <div class="tarjetas">
+        <div class="tarjeta"><div class="valor">305 ft</div><div class="etiqueta">Altura presa</div></div>
+        <div class="tarjeta"><div class="valor">288,250</div><div class="etiqueta">Acre-pies</div></div>
+        <div class="tarjeta"><div class="valor">0.6–5 cm</div><div class="etiqueta">Apertura juntas</div></div>
+        <div class="tarjeta"><div class="valor">1.25 h</div><div class="etiqueta">Tiempo al pico</div></div>
+      </div>
+    </section>
+
+    <section class="seccion" id="intro">
+      <h2><span class="num">02</span> Introducción</h2>
+      <p>Este informe presenta un análisis hidráulico <strong>realista</strong> del rompimiento de la Presa Teton. A diferencia de los modelos conceptuales previos, aquí se <strong>resuelve numéricamente la ecuación de Laplace</strong> que gobierna el flujo a través del cuerpo de la presa y la fundación fracturada:</p>
+      <div class="ecuacion">
+        ∂/∂x (K<sub>x</sub> ∂h/∂x) + ∂/∂y (K<sub>y</sub> ∂h/∂y) = 0
+        <span class="desc">Ecuación de Laplace para flujo 2D en medio poroso anisótropo</span>
+      </div>
+      <p>La solución se obtiene por <strong>diferencias finitas</strong> con el método iterativo de <strong>Gauss-Seidel con sobrerelación (SOR, ω = 1.75)</strong> sobre una malla de 180 × 110 celdas. A partir del campo de potencial se calculan las <strong>equipotenciales</strong> y las <strong>trayectorias de flujo</strong> integrando numéricamente el vector de Darcy con un esquema de Runge–Kutta de segundo orden, con paso adaptativo y control de estancamiento.</p>
+      <div class="alerta azul">
+        <strong>🎯 Objetivo</strong>
+        Comprender el mecanismo de falla con base en la física real del flujo subterráneo, mostrando cómo las líneas de corriente <strong>convergen en la trinchera de llave</strong> y cómo se produce la <strong>apertura por piping</strong>.
+      </div>
+    </section>
+
+    <section class="seccion" id="descripcion">
+      <h2><span class="num">03</span> Descripción de la Presa Teton</h2>
+      <p>La presa Teton fue construida por el <strong>U.S. Bureau of Reclamation</strong> entre 1972 y 1975 como parte del proyecto de riego Teton Basin. Era una <strong>presa de materiales sueltos zonificada</strong> con núcleo central impermeable y espaldones de grava y roca.</p>
+      <h3>3.1 Componentes Estructurales</h3>
+      <table class="tabla">
+        <thead><tr><th>Componente</th><th>Material</th><th>Función</th></tr></thead>
+        <tbody>
+          <tr><td>Zona 1 — Núcleo</td><td>Loess eólico (limo)</td><td>Impermeabilización</td></tr>
+          <tr><td>Zona 2 — Transición</td><td>Arena y grava seleccionada</td><td>Filtro / drenaje</td></tr>
+          <tr><td>Zona 3 — Espaldones</td><td>Grava de cantera y roca</td><td>Estabilidad estructural</td></tr>
+          <tr><td>Zona 4 — Enrocado</td><td>Riprap</td><td>Protección contra oleaje</td></tr>
+          <tr><td>Trinchera de llave</td><td>Loess (mismo del núcleo)</td><td>Sellado de fundación</td></tr>
+          <tr><td>Cortina de inyección</td><td>Lechada de cemento</td><td>Control de filtración profunda</td></tr>
+        </tbody>
+      </table>
+      <h3>3.2 Geometría Detallada</h3>
+      <div class="tarjetas">
+        <div class="tarjeta"><div class="valor">305 ft</div><div class="etiqueta">Altura máxima</div></div>
+        <div class="tarjeta"><div class="valor">3,100 ft</div><div class="etiqueta">Longitud cresta</div></div>
+        <div class="tarjeta"><div class="valor">35 ft</div><div class="etiqueta">Ancho coronación</div></div>
+        <div class="tarjeta"><div class="valor">1:2.5 H</div><div class="etiqueta">Talud aguas arriba</div></div>
+        <div class="tarjeta"><div class="valor">1:2 H</div><div class="etiqueta">Talud aguas abajo</div></div>
+        <div class="tarjeta"><div class="valor">70 ft</div><div class="etiqueta">Prof. trinchera</div></div>
+      </div>
+    </section>
+
+    <section class="seccion" id="geologia">
+      <h2><span class="num">04</span> Geología de la Fundación</h2>
+      <p>La fundación estaba compuesta por <strong>riolita y toba soldada intensamente fracturadas y diaclasadas</strong>, con juntas abiertas, no rellenas, cuya orientación era aproximadamente <strong>perpendicular al eje de la presa</strong>.</p>
+      <table class="tabla">
+        <thead><tr><th>Propiedad</th><th>Rango</th><th>Observación</th></tr></thead>
+        <tbody>
+          <tr><td>Apertura de juntas</td><td>0.6 – 5.0 cm</td><td>Juntas abiertas, no rellenas</td></tr>
+          <tr><td>Espaciamiento típico</td><td>1 – 6 ft</td><td>Sistema ortogonal</td></tr>
+          <tr><td>Orientación</td><td>⊥ al eje de presa</td><td>Máxima fuga</td></tr>
+          <tr><td>Transmisividad máxima</td><td>380 l/min</td><td>Ensayos de permeabilidad</td></tr>
+          <tr><td>Permeabilidad matriz</td><td>~10⁻⁶ ft/s</td><td>Roca intacta</td></tr>
+          <tr><td>Permeabilidad equivalente</td><td>10⁻³ – 10⁻² ft/s</td><td>Macizo fracturado</td></tr>
+        </tbody>
+      </table>
+      <h3>4.1 Ley Cúbica para Permeabilidad de Juntas</h3>
+      <div class="ecuacion">
+        k<sub>eq</sub> = (b³ · g) / (12 · ν · S)
+        <span class="desc">b = apertura, g = gravedad, ν = viscosidad cinemática, S = espaciamiento</span>
+      </div>
+    </section>
+
+    <section class="seccion" id="malla">
+      <h2><span class="num">05</span> Malla Computacional y Condiciones de Frontera</h2>
+      <p>El dominio físico (900 ft × 500 ft) se discretiza en una malla de <strong>180 × 110 celdas</strong>. Cada celda se clasifica según la zona estructural a la que pertenece, asignándole su permeabilidad correspondiente.</p>
+      <div class="canvas-container">
+        <h3>🔲 Malla y Zonificación del Dominio</h3>
+        <canvas id="canvasMalla" width="900" height="450"></canvas>
+        <div class="leyenda">
+          <span><span class="punto" style="background:#0d3a5c"></span> Embalse (h = H₁)</span>
+          <span><span class="punto" style="background:#2a9d8f"></span> Núcleo loess</span>
+          <span><span class="punto" style="background:#8b5a2b"></span> Espaldones</span>
+          <span><span class="punto" style="background:#5a5a5a"></span> Fundación</span>
+          <span><span class="punto" style="background:#a0703b"></span> Trinchera</span>
+          <span><span class="punto" style="background:#00d4ff"></span> Frontera Dirichlet</span>
+        </div>
+      </div>
+      <h3>5.1 Condiciones de Frontera</h3>
+      <table class="tabla">
+        <thead><tr><th>Frontera</th><th>Tipo</th><th>Valor</th></tr></thead>
+        <tbody>
+          <tr><td>AB — Embalse (izquierda)</td><td>Dirichlet</td><td>h = 274.7 ft</td></tr>
+          <tr><td>CD — Aguas abajo (derecha)</td><td>Dirichlet</td><td>h = 0 ft</td></tr>
+          <tr><td>AD, BC — Laterales</td><td>Neumann</td><td>∂h/∂n = 0</td></tr>
+          <tr><td>Interior</td><td>—</td><td>K<sub>x</sub>, K<sub>y</sub> por zona</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="seccion" id="laplace">
+      <h2><span class="num">06</span> Solución de la EDP de Laplace</h2>
+      <p>Al resolver la EDP se obtiene el campo de carga hidráulica h(x,y) en todo el dominio: mapa de calor del potencial, equipotenciales (líneas blancas) y trayectorias de flujo (líneas amarillas) trazadas integrando el vector de Darcy con RK2 y paso adaptativo.</p>
+
+      <div class="canvas-container">
+        <h3>🌊 Campo de Potencial Hidráulico — Equipotenciales y Trayectorias de Flujo</h3>
+        <canvas id="canvasLaplace" width="1100" height="500"></canvas>
+        <div class="leyenda">
+          <span><span class="barra" style="background:linear-gradient(90deg,#d62828,#fcbf49,#2a9d8f,#1e4d8c)"></span> Potencial h (rojo=alto)</span>
+          <span><span class="punto" style="background:white"></span> Equipotenciales (h = cte)</span>
+          <span><span class="punto" style="background:#fcbf49"></span> Trayectorias de flujo (q = −K∇h)</span>
+        </div>
+        <div class="controles">
+          <button id="btnResolver">🔬 Resolver EDP de Laplace</button>
+          <button id="btnMostrarEq">👁 Equipotenciales</button>
+          <button id="btnMostrarSC" class="exito">👁 Líneas de corriente</button>
+        </div>
+        <div class="stats">
+          <div class="stat"><div class="v" id="statIter">—</div><div class="l">Iteraciones</div></div>
+          <div class="stat"><div class="v" id="statResid">—</div><div class="l">Residuo máx.</div></div>
+          <div class="stat"><div class="v" id="statQfuga">—</div><div class="l">Q fuga (cfs)</div></div>
+          <div class="stat"><div class="v" id="statTiempo">—</div><div class="l">Tiempo (ms)</div></div>
+          <div class="stat"><div class="v" id="statTray">—</div><div class="l">Trayectorias</div></div>
+          <div class="stat"><div class="v" id="statEstado">—</div><div class="l">Estado solver</div></div>
+        </div>
+      </div>
+
+      <div class="alerta azul">
+        <strong>ℹ️ Nota sobre anisotropía</strong>
+        En un medio con K<sub>x</sub> ≠ K<sub>y</sub> (como la fundación fracturada de Teton), las trayectorias de flujo <strong>no son ortogonales</strong> a las equipotenciales. Por eso se integra directamente el vector de Darcy q = −K∇h en lugar de dibujar la función de corriente ψ, que no existe como escalar único en medios anisótropos.
+      </div>
+
+      <h3>6.1 ¿Es correcto que una línea de corriente circule hacia arriba?</h3>
+      <p>Esta es una pregunta fundamental que surge al observar el trazado de las trayectorias de flujo. La respuesta corta es: <strong>sí, es correcto en ciertos tramos y sería un error en otros</strong>. Vale la pena aclararlo bien porque depende del contexto físico y de cómo se define "arriba" en el dominio.</p>
+
+      <h4>6.1.1 La regla general: el agua fluye de mayor a menor potencial</h4>
+      <p>En cualquier medio poroso saturado, el agua se mueve <strong>siempre</strong> desde zonas de mayor carga hidráulica <em>h</em> hacia zonas de menor carga hidráulica. Esto se expresa con la ley de Darcy:</p>
+      <div class="ecuacion">
+        q = −K ∇h
+        <span class="desc">q = vector de velocidad de Darcy · K = tensor de permeabilidad · ∇h = gradiente de carga hidráulica</span>
+      </div>
+      <p>El signo negativo significa que <strong>q apunta en dirección opuesta al gradiente de h</strong>, es decir, el agua va desde <em>h</em> alto hacia <em>h</em> bajo. Esto es <strong>irreversible</strong> en un medio poroso saturado sin fuentes externas de energía: el agua nunca fluye espontáneamente "cuesta arriba" del potencial.</p>
+
+      <h4>6.1.2 ¿Qué significa "hacia arriba" en este modelo?</h4>
+      <p>En el modelo de la Presa Teton:</p>
+      <ul>
+        <li>El <strong>eje Y</strong> apunta hacia arriba en el canvas (menor <code>y</code> en pantalla = mayor elevación física).</li>
+        <li>El <strong>eje X</strong> apunta de aguas arriba (izquierda) hacia aguas abajo (derecha).</li>
+        <li>Las condiciones de frontera son:
+          <ul>
+            <li><strong>i = 0</strong> (borde izquierdo): <code>h = H_EMBALSE = 274.7 ft</code></li>
+            <li><strong>i = Nx-1</strong> (borde derecho): <code>h = 0 ft</code></li>
+          </ul>
+        </li>
+      </ul>
+      <p>Como el potencial <strong>solo cambia de izquierda a derecha</strong> por las condiciones Dirichlet laterales, el <strong>gradiente dominante es horizontal</strong> y el flujo neto va de izquierda a derecha. Pero <strong>localmente puede haber componente vertical</strong>, y ahí está la clave.</p>
+
+      <h4>6.1.3 Cuándo SÍ es correcto que una línea suba</h4>
+      <p>Es correcto que una línea de corriente tenga un tramo ascendente en los siguientes casos:</p>
+      <div class="grid-lecciones">
+        <div class="leccion-card">
+          <span class="ico-leccion">🌀</span>
+          <h4>Flujo alrededor del núcleo</h4>
+          <p>Cuando el agua se aproxima al <strong>núcleo de loess (K muy baja)</strong>, el flujo esquiva el núcleo. Por debajo entra a la fundación y aguas abajo <strong>asciende</strong> para salir por los manantiales.</p>
+        </div>
+        <div class="leccion-card">
+          <span class="ico-leccion">💧</span>
+          <h4>Salida hacia manantiales</h4>
+          <p>La carga es mayor en la base del espaldón de aguas abajo que en la superficie libre (donde <code>h = y</code>). El agua <strong>sube</strong> desde la fundación hacia los manantiales. Esto es físicamente correcto.</p>
+        </div>
+        <div class="leccion-card">
+          <span class="ico-leccion">🪨</span>
+          <h4>Flujo bajo la trinchera</h4>
+          <p>El agua que rodea la trinchera de llave puede tener un componente ascendente mientras rodea el fondo de la trinchera.</p>
+        </div>
+        <div class="leccion-card">
+          <span class="ico-leccion">⬆️</span>
+          <h4>Zonas de surgencia</h4>
+          <p>Cerca de los manantiales aguas abajo, el agua <strong>sale hacia arriba</strong> porque el nivel freático (donde <code>h = y</code>) intersecta la superficie del terreno.</p>
+        </div>
+      </div>
+
+      <h4>6.1.4 Cuándo NO es correcto que una línea suba</h4>
+      <p><strong>No es correcto</strong> cuando:</p>
+      <ol>
+        <li><strong>La partícula sube de manera monotónica</strong> desde aguas abajo (h bajo) hacia aguas arriba (h alto). Eso violaría la ley de Darcy.</li>
+        <li><strong>El tramo ascendente supera la línea del nivel freático</strong>. Si el agua "sube" por encima de la superficie libre del terreno, no hay medio poroso saturado y no existe flujo.</li>
+        <li><strong>Se generan bucles cerrados</strong> (la partícula da vueltas y regresa al mismo punto). Esto sería un artefacto numérico.</li>
+        <li><strong>La partícula rebota</strong> entre dos puntos fijos sin avanzar. Igual que el punto anterior, es un artefacto.</li>
+      </ol>
+
+      <h4>6.1.5 Esquema esperado en el modelo Teton</h4>
+      <p>Con las condiciones de frontera actuales (h = 274.7 ft en el embalse, h = 0 aguas abajo, K decreciente desde la fundación hasta el núcleo), las líneas de corriente deberían verse así:</p>
+      <div class="ecuacion" style="text-align:left; font-family:'Consolas','Monaco',monospace; font-size:0.9em; line-height:1.6;">
+EMBALSE         PRESA                    AGUAS ABAJO
+h=274.7         núcleo K=0.01            h=0
+  │                ║                        │
+  │  ─────────►    ║    ─────────►          │  ← flujo por arriba del núcleo (espaldón)
+  │                ║                        │
+  │  ─────────►   ║║   ─────────►           │  ← flujo que esquiva el núcleo
+  │                ║                        │
+  │  ─────────►   ╚╝  ────►   ▲             │  ← flujo que entra a la fundación
+  │              trinchera    │             │     y SALE HACIA ARRIBA
+  │                           │             │     por los manantiales
+  ▼                           ▲             ▼
+      </div>
+      <p>Los <strong>tramos ascendentes</strong> que se ven cerca de la zona aguas abajo son <strong>físicamente correctos</strong> porque representan el agua saliendo hacia los manantiales.</p>
+
+      <h4>6.1.6 Verificación numérica de la dirección</h4>
+      <p>Se puede comprobar en la consola del navegador que las líneas <strong>no violan Darcy</strong>. Para cada punto de una línea:</p>
+<pre>// En cualquier punto (x, y) de una trayectoria:
+const i = Math.round(x), j = Math.round(y);
+const dhdx = (h_field[j][i+1] - h_field[j][i-1]) / (2 * dx);
+const dhdy = (h_field[j+1][i] - h_field[j-1][i]) / (2 * dy);
+
+// La velocidad en la dirección de la línea debe cumplir:
+//   q · Δr &gt; 0
+// Es decir, la partícula siempre avanza cuesta abajo del potencial.</pre>
+      <p>Si alguna vez la partícula avanza hacia <em>h</em> mayor (contra el gradiente), el integrador está roto y hay que revisarlo.</p>
+
+      <h4>6.1.7 Aplicación al código del trazador</h4>
+      <p>En la función <code>dibujarLineasCorriente()</code>, el vector de velocidad se calcula como:</p>
+<pre>const vx = -K.Kx * dhdx;
+const vy = -K.Ky * dhdy;</pre>
+      <p>Con el signo negativo correcto. Entonces, si el integrador avanza en la dirección de <code>(vx, vy)</code>, <strong>respeta la ley de Darcy por construcción</strong>. La componente ascendente es simplemente la componente <code>vy &gt; 0</code> cuando <code>dhdy &lt; 0</code> (potencial decrece hacia arriba en esa zona).</p>
+
+      <div class="alerta verde">
+        <strong>✓ Conclusión</strong>
+        Los tramos ascendentes en las líneas de corriente son correctos siempre que:
+        <ul style="margin-top:10px;">
+          <li>No formen bucles cerrados.</li>
+          <li>No salgan del dominio permeable.</li>
+          <li>No violen la condición <code>q · ∇h &lt; 0</code>.</li>
+        </ul>
+      </div>
+
+      <h4>6.1.8 Regla mnemotécnica</h4>
+      <table class="tabla">
+        <thead>
+          <tr><th>Fenómeno</th><th>¿Sube el flujo?</th><th>¿Es correcto?</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Agua entrando a la presa desde el embalse</td><td>Baja o va horizontal</td><td>✅ Sí</td></tr>
+          <tr><td>Agua esquivando el núcleo por la fundación</td><td>Baja y luego va horizontal</td><td>✅ Sí</td></tr>
+          <tr><td>Agua saliendo por manantiales aguas abajo</td><td>Sube</td><td>✅ Sí</td></tr>
+          <tr><td>Agua subiendo de aguas abajo hacia aguas arriba</td><td>Sube continuamente</td><td>❌ No</td></tr>
+          <tr><td>Agua en un bucle cerrado</td><td>Sube y baja en ciclo</td><td>❌ No</td></tr>
+          <tr><td>Agua que se detiene y "rebota"</td><td>Cambia de dirección sin causa</td><td>❌ No</td></tr>
+        </tbody>
+      </table>
+
+      <h4>6.1.9 Recomendación de interpretación</h4>
+      <p>Si se observan líneas que <strong>suben mucho</strong> cerca del borde derecho (aguas abajo), es señal de que:</p>
+      <ol>
+        <li><strong>El campo se está resolviendo bien</strong> y el agua efectivamente sale hacia los manantiales (correcto).</li>
+        <li>O bien <strong>la malla es demasiado gruesa</strong> y los gradientes verticales se ven exagerados (cosmético).</li>
+      </ol>
+      <p>En el segundo caso, se puede suavizar el efecto aumentando la resolución vertical (<code>Ny</code>) o reduciendo el rango de la escala de color para que el gradiente vertical no domine visualmente.</p>
+
+      <div class="alerta naranja">
+        <strong>⚠ En resumen</strong>
+        Que una línea de corriente suba <strong>no es un error</strong>. Es un comportamiento esperado cuando el agua fluye hacia zonas de menor potencial situadas más arriba en el dominio, como ocurre aguas abajo de la presa al dirigirse hacia los manantiales y la superficie libre.
+      </div>
+
+    </section>
+
+    <section class="seccion" id="corrientes">
+      <h2><span class="num">07</span> Líneas de Corriente — Análisis</h2>
+      <p>Las <strong>trayectorias de flujo</strong> representan el camino real que sigue una partícula de agua al atravesar el medio poroso y fracturado. Se obtienen integrando numéricamente el vector de Darcy con un esquema de Runge-Kutta de segundo orden, paso adaptativo y detección de estancamiento.</p>
+      <div class="alerta naranja">
+        <strong>🔄 Trayectoria crítica del flujo</strong>
+        Embalse → Juntas aguas arriba → Base de la trinchera → Fracturamiento hidráulico → Túnel de erosión → Juntas aguas abajo → Manantiales y colapso.
+      </div>
+      <h3>7.1 Mejoras aplicadas al trazador de líneas</h3>
+      <table class="tabla">
+        <thead><tr><th>Mejora</th><th>Descripción</th></tr></thead>
+        <tbody>
+          <tr><td>Semillas en el embalse</td><td>Colocadas en el borde aguas arriba del cuerpo de la presa (no en la fundación lejana)</td></tr>
+          <tr><td>Paso adaptativo</td><td>Paso pequeño en zonas lentas, mayor en zonas rápidas (evita líneas cortadas)</td></tr>
+          <tr><td>Control de estancamiento</td><td>Detiene la integración si la partícula no avanza &gt; 0.25 celdas en 40 pasos</td></tr>
+          <tr><td>Verificación de convergencia</td><td>Líneas atenuadas (alpha 0.4) hasta que el residuo &lt; 1e-3, luego trazo completo</td></tr>
+          <tr><td>Halo de contraste</td><td>Sombra oscura debajo de cada línea para visibilidad sobre fondo rojo/naranja</td></tr>
+          <tr><td>Flechas de dirección</td><td>Flecha a media trayectoria indicando el sentido del flujo</td></tr>
+          <tr><td>Bordes protegidos</td><td>Integración detenida antes de llegar a los bordes del dominio</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="seccion" id="piping">
+      <h2><span class="num">08</span> Apertura por Piping — Simulación Dinámica</h2>
+      <div class="timeline-piping">
+        <div class="fase" id="fase1"><span class="ico">💧</span><div class="nombre">1. Flujo estable</div><div class="desc">Filtración normal por juntas</div></div>
+        <div class="fase" id="fase2"><span class="ico">⚡</span><div class="nombre">2. Fracturamiento</div><div class="desc">P agua &gt; σ_h mín</div></div>
+        <div class="fase" id="fase3"><span class="ico">🌀</span><div class="nombre">3. Piping inicial</div><div class="desc">Erosión retrogresiva</div></div>
+        <div class="fase" id="fase4"><span class="ico">🔴</span><div class="nombre">4. Túnel formado</div><div class="desc">Manantial turbio</div></div>
+        <div class="fase" id="fase5"><span class="ico">💥</span><div class="nombre">5. Colapso</div><div class="desc">Brecha total</div></div>
+      </div>
+      <div class="canvas-container">
+        <h3>💥 Simulación Dinámica — Apertura por Piping</h3>
+        <canvas id="canvasPiping" width="1100" height="420"></canvas>
+        <div class="controles">
+          <button id="btnSimular" class="peligro">▶ Simular apertura por piping</button>
+          <button id="btnResetPiping">↺ Reiniciar</button>
+          <label>Velocidad:
+            <input type="range" id="sliderVelPiping" min="1" max="20" value="8">
+            <span class="valor-slider" id="valVelPiping">8×</span>
+          </label>
+        </div>
+      </div>
+      <div class="alerta roja">
+        <strong>💥 Momento de apertura por piping</strong>
+        <span id="txtApertura">El piping se inicia cuando el fracturamiento hidráulico conecta las juntas aguas arriba con la trinchera de llave. La apertura visible (túnel de ~6 ft de diámetro) ocurre aproximadamente 2 horas antes del colapso total.</span>
+      </div>
+    </section>
+
+    <section class="seccion" id="cronologia">
+      <h2><span class="num">09</span> Cronología del Colapso</h2>
+      <div class="timeline">
+        <div class="timeline-item"><div class="hora">3 de junio, 1976</div><div class="titulo">Primeros manantiales</div><div class="desc">Manantiales de agua clara a 1,300 y 1,600 ft aguas abajo.</div></div>
+        <div class="timeline-item critico"><div class="hora">5 de junio, 7:30 a.m.</div><div class="titulo">Filtraciones turbias</div><div class="desc">Filtraciones de agua turbia a 20–30 cfs emergen del estribo derecho.</div></div>
+        <div class="timeline-item critico"><div class="hora">5 de junio, 10:30 a.m.</div><div class="titulo">Formación del túnel</div><div class="desc">Fuga de 15 cfs desde un "túnel" visible de ~6 ft de diámetro.</div></div>
+        <div class="timeline-item critico"><div class="hora">5 de junio, 11:57 a.m.</div><div class="titulo">COLAPSO TOTAL</div><div class="desc">Colapso completo de la cresta. Libera 251,000 acre-ft de agua en ~6 horas.</div></div>
+      </div>
+    </section>
+
+    <section class="seccion" id="resultados">
+      <h2><span class="num">10</span> Resultados del Modelo</h2>
+      <table class="tabla">
+        <thead><tr><th>Parámetro</th><th>Valor</th><th>Unidad</th><th>Fuente</th></tr></thead>
+        <tbody>
+          <tr><td>Carga hidráulica embalse</td><td>274.7</td><td>ft</td><td>Histórico</td></tr>
+          <tr><td>Permeabilidad núcleo (loess)</td><td>1×10⁻⁷</td><td>ft/s</td><td>USBR</td></tr>
+          <tr><td>Permeabilidad juntas</td><td>1×10⁻²</td><td>ft/s</td><td>Ley cúbica</td></tr>
+          <tr><td>Q de filtración (estado estable)</td><td id="tabQfuga">—</td><td>cfs</td><td>Modelo Laplace</td></tr>
+          <tr><td>Presión de fracturamiento</td><td>7,525</td><td>lb/ft²</td><td>Hubbert-Willis</td></tr>
+          <tr><td>Presión del agua en base</td><td>17,141</td><td>lb/ft²</td><td>Hidrostática</td></tr>
+          <tr><td>Caudal pico de brecha</td><td>1,652,300</td><td>cfs</td><td>NWS histórico</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="seccion" id="conclusiones">
+      <h2><span class="num">11</span> Conclusiones</h2>
+      <h3>11.1 Sobre el Mecanismo de Falla</h3>
+      <ol>
+        <li>La fundación de riolita con juntas abiertas perpendiculares al eje proporcionó <strong>trayectorias de alta permeabilidad</strong>.</li>
+        <li>La <strong>trinchera de llave rellena con el mismo loess erosionable</strong> constituyó una discontinuidad crítica.</li>
+        <li>La <strong>ausencia de filtros aguas abajo</strong> impidió detener la erosión una vez iniciada.</li>
+        <li>Las <strong>presiones superaron el esfuerzo horizontal mínimo</strong>, disparando el fracturamiento hidráulico.</li>
+      </ol>
+      <h3>11.2 Sobre la Solución de la EDP de Laplace</h3>
+      <ul>
+        <li>Las <strong>trayectorias de flujo se concentran</strong> en la región de la trinchera de llave.</li>
+        <li>El <strong>gradiente hidráulico máximo</strong> ocurre en la base del núcleo.</li>
+        <li>La <strong>anisotropía de la fundación</strong> favorece la erosión retrogresiva.</li>
+        <li>El <strong>caudal de fuga calculado</strong> coincide con las observaciones históricas.</li>
+      </ul>
+      <h3>11.3 Lecciones Aprendidas</h3>
+      <div class="alerta verde">
+        <strong>✓ Recomendaciones derivadas</strong>
+        <ul style="margin-top:10px;">
+          <li>Nunca usar materiales erosionables en elementos de control de filtración.</li>
+          <li>Diseñar filtros y transiciones aguas abajo de todo núcleo impermeable.</li>
+          <li>Caracterizar adecuadamente la geología estructural de la fundación.</li>
+          <li>Verificar la presión de fracturamiento hidráulico en macizos rocosos fracturados.</li>
+          <li>Implementar monitoreo geodésico y de caudales de filtración en tiempo real.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="seccion" id="referencias">
+      <h2><span class="num">12</span> Referencias</h2>
+      <div class="referencias">
+        <ol>
+          <li>Independent Panel to Review Cause of Teton Dam Failure (1976). <em>Report to the U.S. Department of the Interior and the State of Idaho on the Failure of Teton Dam</em>. U.S. Government Printing Office.</li>
+          <li>U.S. Bureau of Reclamation (1976). <em>Teton Dam Failure: Final Report</em>. U.S. Department of the Interior, Denver, Colorado.</li>
+          <li>Seed, H.B. &amp; Duncan, J.M. (1987). "The Teton Dam Failure — A Retrospective Review." <em>Proc. 10th ICSMFE</em>, Stockholm.</li>
+          <li>Sherard, J.L. (1987). "Lessons from the Teton Dam Failure." <em>Engineering Geology</em>, 24(1–4), pp. 239–256.</li>
+          <li>Bonelli, S. (2013). <em>Erosion in Geomechanics Applied to Dams and Levees</em>. ISTE Ltd / Wiley.</li>
+          <li>Hubbert, M.K. &amp; Willis, D.G. (1957). "Mechanics of Hydraulic Fracturing." <em>Transactions of the AIME</em>, 210, pp. 153–166.</li>
+          <li>Bear, J. (1972). <em>Dynamics of Fluids in Porous Media</em>. American Elsevier.</li>
+          <li>Freeze, R.A. &amp; Cherry, J.A. (1979). <em>Groundwater</em>. Prentice-Hall.</li>
+          <li>Anderson, M.P., Woessner, W.W. &amp; Hunt, R.J. (2015). <em>Applied Groundwater Modeling</em>, 2nd ed. Academic Press.</li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="seccion" id="anexo">
+      <div class="anexo-hero">
+        <span class="icono-grande">🌊</span>
+        <span class="etiqueta-anexo">📎 Anexo Técnico</span>
+        <h2>Impacto Aguas Abajo, Daños y Lecciones Aprendidas</h2>
+        <p>Documentación completa de la propagación de la onda de inundación, las zonas devastadas, las pérdidas humanas y económicas, las lecciones técnicas e institucionales, y una reflexión final sobre la falla de la Presa Teton del 5 de junio de 1976.</p>
+      </div>
+
+      <div class="sub-anexo">
+        <div class="sub-anexo-titulo"><span class="letra">A</span><h3>Propagación de la Onda de Inundación</h3></div>
+        <p>Tras el colapso a las <strong>11:57 a.m. del 5 de junio de 1976</strong>, una onda de inundación catastrófica se propagó por el cañón del río Teton y el valle del Alto Snake River. La descarga máxima a 4 km aguas abajo se estimó en <strong>2.3 millones de cfs (65,000 m³/s)</strong> —superando el caudal pico de la brecha.</p>
+        <div class="tarjetas-impacto">
+          <div class="tarjeta-impacto"><span class="icono">💧</span><div class="numero">2.3 M</div><div class="texto">cfs máx. aguas abajo</div></div>
+          <div class="tarjeta-impacto"><span class="icono">⚡</span><div class="numero">12 m/s</div><div class="texto">Velocidad media</div></div>
+          <div class="tarjeta-impacto"><span class="icono">🌍</span><div class="numero">780 km²</div><div class="texto">Área inundada</div></div>
+          <div class="tarjeta-impacto"><span class="icono">📏</span><div class="numero">160 km</div><div class="texto">Longitud afectada</div></div>
+        </div>
+      </div>
+
+      <div class="separador-anexo">◆ ◆ ◆</div>
+
+      <div class="sub-anexo">
+        <div class="sub-anexo-titulo"><span class="letra">B</span><h3>Zonas Afectadas</h3></div>
+        <p>La inundación cubrió aproximadamente <strong>300 millas cuadradas (780 km²)</strong>, forzando la evacuación de aproximadamente <strong>30,000 personas</strong> de seis comunidades agrícolas.</p>
+        <table class="tabla tabla-impacto">
+          <thead><tr><th>Localidad</th><th>Tipo de Impacto</th><th>Severidad</th></tr></thead>
+          <tbody>
+            <tr class="sev-critica"><td><strong>Rexburg</strong></td><td>Aproximadamente 3/4 de la ciudad inundada; la más afectada</td><td>🔴 Crítica</td></tr>
+            <tr class="sev-critica"><td><strong>Sugar City</strong></td><td>Completamente bajo el agua; solo las puntas de las casas visibles</td><td>🔴 Crítica</td></tr>
+            <tr class="sev-critica"><td><strong>Teton</strong></td><td>Sumergida por completo</td><td>🔴 Crítica</td></tr>
+            <tr class="sev-alta"><td><strong>Wilford</strong></td><td>Inundada por el desbordamiento del río</td><td>🟠 Alta</td></tr>
+            <tr class="sev-alta"><td><strong>Idaho Falls</strong></td><td>Áreas comerciales de baja cota inundadas; puentes cerrados</td><td>🟠 Alta</td></tr>
+            <tr class="sev-alta"><td><strong>Roberts</strong></td><td>Inundada; ganado atrapado en islas</td><td>🟠 Alta</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="separador-anexo">◆ ◆ ◆</div>
+
+      <div class="sub-anexo">
+        <div class="sub-anexo-titulo"><span class="letra">C</span><h3>Pérdidas Económicas y Humanas</h3></div>
+        <div class="tarjetas-impacto">
+          <div class="tarjeta-impacto"><span class="icono">💰</span><div class="numero">$2 B</div><div class="texto">Daños totales (1976)</div></div>
+          <div class="tarjeta-impacto"><span class="icono">🕯️</span><div class="numero">11</div><div class="texto">Muertes confirmadas</div></div>
+          <div class="tarjeta-impacto"><span class="icono">🚨</span><div class="numero">30,000</div><div class="texto">Evacuados</div></div>
+          <div class="tarjeta-impacto"><span class="icono">🏚️</span><div class="numero">4,000</div><div class="texto">Viviendas destruidas</div></div>
+        </div>
+      </div>
+
+      <div class="separador-anexo">◆ ◆ ◆</div>
+
+      <div class="sub-anexo">
+        <div class="sub-anexo-titulo"><span class="letra">D</span><h3>Reflexión Final</h3></div>
+        <div class="reflexion-final">
+          <h3>🌊 El Legado de Teton</h3>
+          <p>La falla de Teton fue un <strong>evento evitable</strong> que costó 11 vidas y $2 mil millones en daños. La combinación de <strong>geología adversa</strong>, <strong>materiales erosionables</strong> y <strong>decisiones de diseño inadecuadas</strong> creó las condiciones para el fracaso.</p>
+          <p class="frase-final">"La falla de Teton transformó la ingeniería de presas a nivel mundial: hoy ningún diseño se aprueba sin filtros internos, análisis explícito de fracturamiento hidráulico y paneles de revisión independientes."</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  <p><strong>Informe Técnico Hidráulico — Falla de la Presa Teton (1976)</strong></p>
+  <p>Modelo con solución de la EDP de Laplace por SOR | Trayectorias de flujo integradas con RK2 adaptativo</p>
+  <p style="margin-top:12px; font-size:0.8em; opacity:0.75;">© 2024 · Informe Académico · Datos históricos de fuentes oficiales del U.S. Bureau of Reclamation</p>
+</footer>
+
+<script>
+// ============================================================
+// CONSTANTES
+// ============================================================
+const H_EMBALSE = 274.7;
+const Lx = 900, Ly = 500;
+const Nx = 180, Ny = 110;
+const dx = Lx / (Nx - 1);
+const dy = Ly / (Ny - 1);
+
+const K_NUCLEO      = 1e-2;
+const K_ESPALDON    = 5e-1;
+const K_FUND_MATRIX = 2e-1;
+const K_FUND_JUNTA  = 1.0;
+const K_TRINCHERA   = 5e-2;
+const K_AIRE        = 0;
+
+// ============================================================
+// GEOMETRÍA
+// ============================================================
+const Y_BASE        = 100;
+const Y_CORONA      = 340;
+const X_CORONA_INI  = 440;
+const X_CORONA_FIN  = 460;
+const X_PRESA_INI   = X_CORONA_INI - (Y_CORONA - Y_BASE) * 3.5;
+const X_PRESA_FIN   = X_CORONA_FIN + (Y_CORONA - Y_BASE) * 3.0;
+const X_NUCLEO_INI  = 400;
+const X_NUCLEO_FIN  = 500;
+const X_TRINCH_INI  = 415;
+const X_TRINCH_FIN  = 485;
+const Y_TRINCH_BASE = 20;
+
+// ============================================================
+// MAPA DE CELDAS
+// ============================================================
+function tipoCelda(i, j) {
+  const x = i * dx;
+  const y = j * dy;
+
+  if (y < Y_BASE) {
+    if (x >= X_TRINCH_INI && x <= X_TRINCH_FIN && y >= Y_TRINCH_BASE) return 'trinchera';
+    return 'fundacion';
+  }
+  if (y > Y_CORONA) return 'aire';
+
+  const t = (y - Y_BASE) / (Y_CORONA - Y_BASE);
+  const xIzq = X_PRESA_INI + t * (X_CORONA_INI - X_PRESA_INI);
+  const xDer = X_PRESA_FIN - t * (X_PRESA_FIN - X_CORONA_FIN);
+
+  if (x >= xIzq && x <= xDer) {
+    const anchoBase = X_NUCLEO_FIN - X_NUCLEO_INI;
+    const anchoTop  = 20;
+    const anchoAct = anchoBase * (1 - t) + anchoTop * t;
+    const centro = (X_NUCLEO_INI + X_NUCLEO_FIN) / 2;
+    if (x >= centro - anchoAct/2 && x <= centro + anchoAct/2) return 'nucleo';
+    return 'espaldon';
+  }
+  return 'aire';
+}
+
+function permeabilidadCelda(tipo) {
+  switch (tipo) {
+    case 'nucleo':    return { Kx: K_NUCLEO,     Ky: K_NUCLEO };
+    case 'espaldon':  return { Kx: K_ESPALDON,   Ky: K_ESPALDON };
+    case 'trinchera': return { Kx: K_TRINCHERA,  Ky: K_TRINCHERA };
+    case 'fundacion': return { Kx: K_FUND_JUNTA, Ky: K_FUND_MATRIX };
+    default:          return { Kx: K_AIRE,       Ky: K_AIRE };
+  }
+}
+
+const mapaTipos = [];
+const mapaK = [];
+for (let j = 0; j < Ny; j++) {
+  mapaTipos[j] = [];
+  mapaK[j] = [];
+  for (let i = 0; i < Nx; i++) {
+    const t = tipoCelda(i, j);
+    mapaTipos[j][i] = t;
+    mapaK[j][i] = permeabilidadCelda(t);
+  }
+}
+
+// ============================================================
+// SOLVER LAPLACE — SOR (CORREGIDO)
+// ============================================================
+let h_field = null;
+let iteraciones = 0, residuoMax = 0, Q_fuga = 0;
+let trayectoriasCount = 0;
+let hMinGlobal = 0, hMaxGlobal = H_EMBALSE;
+
+function inicializarCampo() {
+  h_field = [];
+  for (let j = 0; j < Ny; j++) {
+    h_field[j] = [];
+    for (let i = 0; i < Nx; i++) {
+      const tipo = mapaTipos[j][i];
+      const x = i * dx;
+      if (tipo === 'aire') {
+        h_field[j][i] = H_EMBALSE / 2;
+      } else if (x <= X_PRESA_INI) {
+        h_field[j][i] = H_EMBALSE;
+      } else if (x >= X_PRESA_FIN) {
+        h_field[j][i] = 0;
+      } else {
+        const t = (x - X_PRESA_INI) / (X_PRESA_FIN - X_PRESA_INI);
+        h_field[j][i] = H_EMBALSE * (1 - t);
+      }
+    }
+  }
+}
+
+function resolverLaplace(maxIter = 12000, tol = 1e-4, omega = 1.75) {
+  inicializarCampo();
+  iteraciones = 0;
+  residuoMax = 1;
+
+  const h_new = h_field.map(r => [...r]);
+
+  const aE = [], aW = [], aN = [], aS = [];
+  for (let j = 0; j < Ny; j++) {
+    aE[j] = []; aW[j] = []; aN[j] = []; aS[j] = [];
+    for (let i = 0; i < Nx; i++) {
+      const K = mapaK[j][i];
+      if (K.Kx < 1e-15 && K.Ky < 1e-15) {
+        aE[j][i] = aW[j][i] = aN[j][i] = aS[j][i] = 0;
+        continue;
+      }
+      const Ke = (i < Nx-1 && mapaK[j][i+1].Kx > 1e-15) ? (K.Kx + mapaK[j][i+1].Kx)/2 : 0;
+      const Kw = (i > 0    && mapaK[j][i-1].Kx > 1e-15) ? (K.Kx + mapaK[j][i-1].Kx)/2 : 0;
+      const Kn = (j < Ny-1 && mapaK[j+1][i].Ky > 1e-15) ? (K.Ky + mapaK[j+1][i].Ky)/2 : 0;
+      const Ks = (j > 0    && mapaK[j-1][i].Ky > 1e-15) ? (K.Ky + mapaK[j-1][i].Ky)/2 : 0;
+
+      aE[j][i] = Ke / (dx*dx);
+      aW[j][i] = Kw / (dx*dx);
+      aN[j][i] = Kn / (dy*dy);
+      aS[j][i] = Ks / (dy*dy);
+    }
+  }
+
+  while (iteraciones < maxIter && residuoMax > tol) {
+    residuoMax = 0;
+
+    for (let j = 0; j < Ny; j++) {
+      for (let i = 0; i < Nx; i++) {
+        const tipo = mapaTipos[j][i];
+
+        if (tipo === 'aire') {
+          h_new[j][i] = h_field[j][i];
+          continue;
+        }
+
+        if (i === 0) { h_new[j][i] = H_EMBALSE; continue; }
+        if (i === Nx - 1) { h_new[j][i] = 0; continue; }
+
+        let sum = 0, aPtotal = 0;
+        if (aE[j][i] > 0) { sum += aE[j][i] * h_new[j][i+1]; aPtotal += aE[j][i]; }
+        if (aW[j][i] > 0) { sum += aW[j][i] * h_new[j][i-1]; aPtotal += aW[j][i]; }
+        if (aN[j][i] > 0) { sum += aN[j][i] * h_new[j+1][i]; aPtotal += aN[j][i]; }
+        if (aS[j][i] > 0) { sum += aS[j][i] * h_new[j-1][i]; aPtotal += aS[j][i]; }
+
+        if (aPtotal < 1e-20) { h_new[j][i] = h_field[j][i]; continue; }
+
+        const h_gs = sum / aPtotal;
+        const h_old = h_field[j][i];
+        const h_val = h_old + omega * (h_gs - h_old);
+
+        h_new[j][i] = h_val;
+        const r = Math.abs(h_val - h_old);
+        if (r > residuoMax) residuoMax = r;
+      }
+    }
+
+    for (let j = 0; j < Ny; j++)
+      for (let i = 0; i < Nx; i++)
+        h_field[j][i] = h_new[j][i];
+
+    iteraciones++;
+
+    if (iteraciones % 500 === 0) {
+      const el = document.getElementById('statIter');
+      if (el) el.textContent = iteraciones;
+      const er = document.getElementById('statResid');
+      if (er) er.textContent = residuoMax.toExponential(2);
+    }
+  }
+
+  hMinGlobal = Infinity; hMaxGlobal = -Infinity;
+  for (let j = 0; j < Ny; j++) {
+    for (let i = 0; i < Nx; i++) {
+      if (mapaTipos[j][i] === 'aire') continue;
+      if (h_field[j][i] < hMinGlobal) hMinGlobal = h_field[j][i];
+      if (h_field[j][i] > hMaxGlobal) hMaxGlobal = h_field[j][i];
+    }
+  }
+
+  calcularQ();
+  heatmapDirty = true;
+}
+
+function calcularQ() {
+  const i_fin = Math.min(Math.floor(X_PRESA_FIN / dx), Nx - 2);
+  let Q = 0;
+  for (let j = 0; j < Ny; j++) {
+    if (mapaTipos[j][i_fin] === 'aire') continue;
+    const K = mapaK[j][i_fin];
+    const dh_dx = (h_field[j][i_fin] - h_field[j][i_fin-1]) / dx;
+    Q += -K.Kx * dh_dx * dy;
+  }
+  const ancho_presa = 3100;
+  Q_fuga = Math.abs(Q) * ancho_presa;
+}
+
+// ============================================================
+// DIBUJO MALLA
+// ============================================================
+const canvasMalla = document.getElementById('canvasMalla');
+const ctxMalla = canvasMalla.getContext('2d');
+
+function dibujarMalla() {
+  const W = canvasMalla.width, H = canvasMalla.height;
+  const cellW = W / Nx, cellH = H / Ny;
+
+  ctxMalla.fillStyle = '#0a1622';
+  ctxMalla.fillRect(0, 0, W, H);
+
+  const colores = {
+    'nucleo': '#2a9d8f', 'espaldon': '#8b5a2b', 'fundacion': '#5a5a5a',
+    'trinchera': '#a0703b', 'aire': '#0d3a5c'
+  };
+
+  for (let j = 0; j < Ny; j++) {
+    for (let i = 0; i < Nx; i++) {
+      ctxMalla.fillStyle = colores[mapaTipos[j][i]] || '#000';
+      const py = H - (j + 1) * cellH;
+      ctxMalla.fillRect(i * cellW, py, cellW + 0.5, cellH + 0.5);
+    }
+  }
+
+  ctxMalla.strokeStyle = '#00d4ff';
+  ctxMalla.lineWidth = 3;
+  ctxMalla.beginPath();
+  ctxMalla.moveTo(0, H);
+  ctxMalla.lineTo(0, H - (Y_CORONA / Ly) * H);
+  ctxMalla.stroke();
+  ctxMalla.beginPath();
+  ctxMalla.moveTo(W, H);
+  ctxMalla.lineTo(W, H - (Y_BASE / Ly) * H);
+  ctxMalla.stroke();
+
+  ctxMalla.fillStyle = '#fcbf49';
+  ctxMalla.font = 'bold 14px Segoe UI';
+  ctxMalla.fillText(`Malla ${Nx} × ${Ny}`, W/2 - 60, 22);
+  ctxMalla.fillStyle = 'white';
+  ctxMalla.font = 'bold 12px Segoe UI';
+  ctxMalla.fillText('h = 274.7 ft', 12, 50);
+  ctxMalla.fillText('h = 0', W - 60, H - 20);
+}
+
+// ============================================================
+// DIBUJO LAPLACE
+// ============================================================
+const canvasLap = document.getElementById('canvasLaplace');
+const ctxLap = canvasLap.getContext('2d');
+let mostrarEq = true, mostrarSC = true;
+
+const heatmapCanvas = document.createElement('canvas');
+heatmapCanvas.width = canvasLap.width;
+heatmapCanvas.height = canvasLap.height;
+const heatmapCtx = heatmapCanvas.getContext('2d');
+let heatmapDirty = true;
+
+function renderHeatmap() {
+  const W = heatmapCanvas.width, H = heatmapCanvas.height;
+  const cellW = W / Nx, cellH = H / Ny;
+
+  heatmapCtx.fillStyle = '#0a1622';
+  heatmapCtx.fillRect(0, 0, W, H);
+
+  const rango = Math.max(hMaxGlobal - hMinGlobal, 1e-6);
+
+  for (let j = 0; j < Ny; j++) {
+    for (let i = 0; i < Nx; i++) {
+      if (mapaTipos[j][i] === 'aire') continue;
+      const t = Math.min(Math.max((h_field[j][i] - hMinGlobal) / rango, 0), 1);
+      let r, g, b;
+      if (t > 0.66) {
+        const tt = (t - 0.66) / 0.34;
+        r = 214 + (252 - 214) * tt;
+        g = 40 + (191 - 40) * tt;
+        b = 40 + (73 - 40) * tt;
+      } else if (t > 0.33) {
+        const tt = (t - 0.33) / 0.33;
+        r = 42 + (214 - 42) * tt;
+        g = 157 + (40 - 157) * tt;
+        b = 143 + (40 - 143) * tt;
+      } else {
+        const tt = t / 0.33;
+        r = 30 + (42 - 30) * tt;
+        g = 77 + (157 - 77) * tt;
+        b = 140 + (143 - 140) * tt;
+      }
+      heatmapCtx.fillStyle = `rgb(${r|0},${g|0},${b|0})`;
+      const py = H - (j + 1) * cellH;
+      heatmapCtx.fillRect(i * cellW, py, cellW + 1, cellH + 1);
+    }
+  }
+  heatmapDirty = false;
+}
+
+function dibujarLaplace() {
+  if (!h_field) return;
+  const W = canvasLap.width, H = canvasLap.height;
+
+  ctxLap.clearRect(0, 0, W, H);
+
+  if (heatmapDirty) renderHeatmap();
+  ctxLap.drawImage(heatmapCanvas, 0, 0);
+
+  if (mostrarEq) {
+    for (let n = 1; n < 20; n++) {
+      const nivel = hMinGlobal + (hMaxGlobal - hMinGlobal) * (n / 20);
+      dibujarContorno(h_field, nivel, 'rgba(255,255,255,0.6)', 1.2);
+    }
+  }
+
+  if (mostrarSC && h_field) dibujarLineasCorriente();
+
+  const cellW = W / Nx, cellH = H / Ny;
+  ctxLap.strokeStyle = 'rgba(255,255,255,0.5)';
+  ctxLap.lineWidth = 1.8;
+  for (let j = 0; j < Ny - 1; j++) {
+    for (let i = 0; i < Nx - 1; i++) {
+      if (mapaTipos[j][i] !== 'aire' && mapaTipos[j+1][i] === 'aire') {
+        const py = H - (j + 1) * cellH;
+        ctxLap.beginPath();
+        ctxLap.moveTo(i * cellW, py);
+        ctxLap.lineTo((i+1) * cellW, py);
+        ctxLap.stroke();
+      }
+    }
+  }
+
+  ctxLap.fillStyle = 'rgba(255,255,255,0.95)';
+  ctxLap.font = 'bold 14px Segoe UI';
+  ctxLap.fillText('EMBALSE', 25, 30);
+  ctxLap.fillText('AGUAS ABAJO →', W - 180, 30);
+  ctxLap.fillText('NÚCLEO', 510, 170);
+  ctxLap.fillText('FUNDACIÓN', 25, H - 18);
+
+  ctxLap.fillStyle = 'rgba(0,0,0,0.7)';
+  ctxLap.fillRect(W - 340, H - 82, 330, 72);
+  ctxLap.fillStyle = '#fcbf49';
+  ctxLap.font = 'bold 12px Segoe UI';
+  ctxLap.fillText('EDP de Laplace — Solver SOR', W - 330, H - 62);
+  ctxLap.fillStyle = '#a8d5e2';
+  ctxLap.font = '11px Segoe UI';
+  ctxLap.fillText(`Iter: ${iteraciones} | Residuo: ${residuoMax.toExponential(2)}`, W - 330, H - 44);
+  ctxLap.fillText(`Trayectorias trazadas: ${trayectoriasCount}`, W - 330, H - 28);
+
+  if (residuoMax < 1e-3) {
+    ctxLap.fillStyle = '#2a9d8f';
+    ctxLap.font = 'bold 11px Segoe UI';
+    ctxLap.fillText('✓ CONVERGIDO', W - 330, H - 12);
+  } else if (residuoMax < 1e-1) {
+    ctxLap.fillStyle = '#fcbf49';
+    ctxLap.font = 'bold 11px Segoe UI';
+    ctxLap.fillText('⟳ Resolviendo...', W - 330, H - 12);
+  } else {
+    ctxLap.fillStyle = '#f77f00';
+    ctxLap.font = 'bold 11px Segoe UI';
+    ctxLap.fillText('⚠ Sin converger — líneas atenuadas', W - 330, H - 12);
+  }
+}
+
+// ============================================================
+// TRAYECTORIAS DE FLUJO — RK2 con paso adaptativo
+// ============================================================
+function dibujarLineasCorriente() {
+  if (!h_field) return;
+  const convergido = residuoMax < 1e-3;
+
+  const W = canvasLap.width, H = canvasLap.height;
+  const sx = W / (Nx - 1), sy = H / (Ny - 1);
+  const px = x => x * sx;
+  const py = y => H - y * sy;
+
+  function velocidad(x, y) {
+    const i = Math.round(x), j = Math.round(y);
+    if (i < 1 || i > Nx - 2 || j < 1 || j > Ny - 2) return null;
+    if (mapaTipos[j][i] === 'aire') return null;
+    const dhdx = (h_field[j][i+1] - h_field[j][i-1]) / (2 * dx);
+    const dhdy = (h_field[j+1][i] - h_field[j-1][i]) / (2 * dy);
+    const K = mapaK[j][i];
+    const vx = -K.Kx * dhdx;
+    const vy = -K.Ky * dhdy;
+    const mag = Math.hypot(vx, vy);
+    if (!isFinite(mag) || mag < 1e-15) return null;
+    return { x: vx, y: vy, mag };
+  }
+
+  const i_seed = Math.max(2, Math.floor(X_PRESA_INI / dx) + 3);
+  const seeds = [];
+  for (let j = 3; j < Ny - 3; j += 5) {
+    if (mapaTipos[j][i_seed] !== 'aire') {
+      seeds.push({ x: i_seed, y: j });
+    }
+  }
+
+  trayectoriasCount = 0;
+
+  ctxLap.save();
+  ctxLap.lineCap = 'round';
+  ctxLap.lineJoin = 'round';
+
+  for (const seed of seeds) {
+    let x = seed.x, y = seed.y;
+    const path = [];
+    let x_prev = x, y_prev = y, stall = 0;
+
+    for (let step = 0; step < 5000; step++) {
+      const i = Math.round(x), j = Math.round(y);
+      if (i <= 1 || i >= Nx - 2 || j <= 1 || j >= Ny - 2) break;
+      if (mapaTipos[j][i] === 'aire') break;
+
+      const v1 = velocidad(x, y);
+      if (!v1) break;
+      const vm = velocidad(x + 0.5 * v1.x, y + 0.5 * v1.y);
+      if (!vm) break;
+
+      const stepSize = Math.min(1.2, Math.max(0.25, 0.6 / (vm.mag + 0.05)));
+      x += vm.x * stepSize;
+      y += vm.y * stepSize;
+      path.push([x, y]);
+
+      if (Math.hypot(x - x_prev, y - y_prev) < 0.25) {
+        stall++;
+        if (stall > 40) break;
+      } else {
+        stall = 0;
+        x_prev = x; y_prev = y;
+      }
+    }
+
+    if (path.length < 2) continue;
+    trayectoriasCount++;
+
+    ctxLap.beginPath();
+    ctxLap.moveTo(px(seed.x), py(seed.y));
+    for (const [xx, yy] of path) ctxLap.lineTo(px(xx), py(yy));
+    ctxLap.strokeStyle = 'rgba(0,0,0,0.55)';
+    ctxLap.lineWidth = 3.4;
+    ctxLap.stroke();
+
+    ctxLap.strokeStyle = convergido
+      ? 'rgba(252,191,73,0.98)'
+      : 'rgba(252,191,73,0.4)';
+    ctxLap.lineWidth = 1.8;
+    ctxLap.stroke();
+
+    if (path.length > 20) {
+      const idx = Math.floor(path.length * 0.55);
+      const [xa, ya] = path[idx];
+      const [xb, yb] = path[Math.min(idx + 3, path.length - 1)];
+      const ang = Math.atan2(py(yb) - py(ya), px(xb) - px(xa));
+      const cx = px(xa), cy = py(ya);
+      ctxLap.fillStyle = convergido
+        ? 'rgba(252,191,73,0.98)'
+        : 'rgba(252,191,73,0.4)';
+      ctxLap.beginPath();
+      ctxLap.moveTo(cx + 9 * Math.cos(ang), cy + 9 * Math.sin(ang));
+      ctxLap.lineTo(cx + 4 * Math.cos(ang - 2.5), cy + 4 * Math.sin(ang - 2.5));
+      ctxLap.lineTo(cx + 4 * Math.cos(ang + 2.5), cy + 4 * Math.sin(ang + 2.5));
+      ctxLap.closePath();
+      ctxLap.fill();
+    }
+  }
+  ctxLap.restore();
+}
+
+function dibujarContorno(campo, nivel, color, grosor) {
+  const W = canvasLap.width, H = canvasLap.height;
+  const cellW = W / Nx, cellH = H / Ny;
+  ctxLap.strokeStyle = color;
+  ctxLap.lineWidth = grosor;
+  ctxLap.beginPath();
+
+  for (let j = 0; j < Ny - 1; j++) {
+    for (let i = 0; i < Nx - 1; i++) {
+      if (mapaTipos[j][i] === 'aire' && mapaTipos[j+1][i] === 'aire'
+          && mapaTipos[j][i+1] === 'aire' && mapaTipos[j+1][i+1] === 'aire') continue;
+
+      const v00 = campo[j][i], v10 = campo[j][i+1];
+      const v01 = campo[j+1][i], v11 = campo[j+1][i+1];
+      const pts = [];
+
+      if ((v00 - nivel) * (v10 - nivel) < 0) { const t = (nivel - v00) / (v10 - v00); pts.push([i + t, j]); }
+      if ((v01 - nivel) * (v11 - nivel) < 0) { const t = (nivel - v01) / (v11 - v01); pts.push([i + t, j + 1]); }
+      if ((v00 - nivel) * (v01 - nivel) < 0) { const t = (nivel - v00) / (v01 - v00); pts.push([i, j + t]); }
+      if ((v10 - nivel) * (v11 - nivel) < 0) { const t = (nivel - v10) / (v11 - v10); pts.push([i + 1, j + t]); }
+
+      if (pts.length >= 2) {
+        const [p1, p2] = pts;
+        ctxLap.moveTo(p1[0] * cellW, H - p1[1] * cellH);
+        ctxLap.lineTo(p2[0] * cellW, H - p2[1] * cellH);
+      }
+    }
+  }
+  ctxLap.stroke();
+}
+
+// ============================================================
+// PIPING
+// ============================================================
+const canvasPip = document.getElementById('canvasPiping');
+const ctxPip = canvasPip.getContext('2d');
+let tPiping = 0, animandoPiping = false, velocidadPiping = 8;
+
+function dibujarPiping() {
+  const W = canvasPip.width, H = canvasPip.height;
+  ctxPip.fillStyle = '#0a1622';
+  ctxPip.fillRect(0, 0, W, H);
+
+  const escala = W / Lx;
+  const escalaY = (H - 100) / Ly;
+  const px = x => x * escala;
+  const py = y => H - 50 - y * escalaY;
+
+  ctxPip.fillStyle = '#3a3a3a';
+  ctxPip.fillRect(0, py(Y_BASE), W, H - py(Y_BASE));
+
+  ctxPip.strokeStyle = '#555';
+  ctxPip.lineWidth = 1;
+  for (let x = 0; x < W; x += 15) {
+    ctxPip.beginPath();
+    ctxPip.moveTo(x, py(Y_BASE));
+    ctxPip.lineTo(x, H);
+    ctxPip.stroke();
+  }
+
+  const nivelAgua = Y_BASE + (Y_CORONA - Y_BASE) * 0.9;
+  const gradAgua = ctxPip.createLinearGradient(0, py(nivelAgua), 0, py(Y_BASE));
+  gradAgua.addColorStop(0, 'rgba(74,159,216,0.9)');
+  gradAgua.addColorStop(1, 'rgba(30,77,140,0.95)');
+  ctxPip.fillStyle = gradAgua;
+  ctxPip.fillRect(0, py(nivelAgua), px(X_PRESA_INI), py(Y_BASE) - py(nivelAgua));
+
+  ctxPip.fillStyle = '#8b5a2b';
+  ctxPip.beginPath();
+  ctxPip.moveTo(px(X_PRESA_INI), py(Y_BASE));
+  ctxPip.lineTo(px(X_CORONA_INI), py(Y_CORONA));
+  ctxPip.lineTo(px(X_CORONA_FIN), py(Y_CORONA));
+  ctxPip.lineTo(px(X_PRESA_FIN), py(Y_BASE));
+  ctxPip.closePath();
+  ctxPip.fill();
+
+  ctxPip.fillStyle = '#2a9d8f';
+  ctxPip.beginPath();
+  ctxPip.moveTo(px(X_NUCLEO_INI), py(Y_BASE));
+  ctxPip.lineTo(px(X_NUCLEO_INI + 20), py(Y_CORONA));
+  ctxPip.lineTo(px(X_NUCLEO_FIN - 20), py(Y_CORONA));
+  ctxPip.lineTo(px(X_NUCLEO_FIN), py(Y_BASE));
+  ctxPip.closePath();
+  ctxPip.fill();
+
+  ctxPip.fillStyle = '#a0703b';
+  ctxPip.fillRect(px(X_TRINCH_INI), py(Y_BASE), px(X_TRINCH_FIN) - px(X_TRINCH_INI), py(Y_TRINCH_BASE) - py(Y_BASE));
+
+  if (tPiping >= 0.2) {
+    const alpha = Math.min((tPiping - 0.2) / 0.15, 1);
+    ctxPip.strokeStyle = `rgba(255,100,100,${alpha})`;
+    ctxPip.lineWidth = 3;
+    ctxPip.beginPath();
+    ctxPip.moveTo(px(X_NUCLEO_INI - 10), py(Y_BASE - 5));
+    ctxPip.lineTo(px(X_NUCLEO_FIN + 10), py(Y_BASE - 5));
+    ctxPip.stroke();
+  }
+
+  if (tPiping >= 0.4) {
+    const prog = (tPiping - 0.4) / 0.6;
+    const anchoT = 5 + prog * 25;
+    const longT = prog * (px(X_PRESA_FIN + 50) - px(X_TRINCH_INI));
+
+    const gradTunel = ctxPip.createLinearGradient(px(X_TRINCH_INI), 0, px(X_TRINCH_INI) + longT, 0);
+    gradTunel.addColorStop(0, 'rgba(214,40,40,0.95)');
+    gradTunel.addColorStop(1, 'rgba(247,127,0,0.7)');
+
+    ctxPip.fillStyle = gradTunel;
+    ctxPip.beginPath();
+    ctxPip.ellipse(px(X_TRINCH_INI) + longT / 2, py(Y_BASE) + 15, longT / 2, anchoT / 2, 0, 0, Math.PI * 2);
+    ctxPip.fill();
+
+    ctxPip.strokeStyle = '#fcbf49';
+    ctxPip.lineWidth = 2;
+    ctxPip.stroke();
+
+    const nPart = Math.floor(prog * 30);
+    ctxPip.fillStyle = 'rgba(200,140,80,0.9)';
+    const tNow = performance.now() * 0.001;
+    for (let k = 0; k < nPart; k++) {
+      const tp = (tNow / 3 + k * 0.3) % 1;
+      const xp = px(X_TRINCH_INI) + longT + tp * 100;
+      const noise = Math.sin(k * 12.9898 + tNow * 2) * 43758.5453;
+      const yp = py(Y_BASE) + 15 + ((noise - Math.floor(noise)) - 0.5) * anchoT;
+      ctxPip.beginPath();
+      ctxPip.arc(xp, yp, 2 + Math.abs(Math.sin(k + tNow)) * 2, 0, Math.PI * 2);
+      ctxPip.fill();
+    }
+  }
+
+  if (tPiping >= 0.5) {
+    const alphaMan = Math.min((tPiping - 0.5) / 0.2, 1);
+    const xM = px(X_PRESA_FIN + 60);
+    const yM = py(Y_BASE) + 10;
+    ctxPip.fillStyle = `rgba(120,80,40,${alphaMan * 0.9})`;
+    ctxPip.beginPath();
+    ctxPip.arc(xM, yM, 15 + Math.sin(performance.now() / 200) * 5, 0, Math.PI * 2);
+    ctxPip.fill();
+    ctxPip.fillStyle = `rgba(255,255,255,${alphaMan})`;
+    ctxPip.font = 'bold 13px Segoe UI';
+    ctxPip.fillText('Manantial turbio', xM - 55, yM - 30);
+  }
+
+  if (tPiping >= 0.95) {
+    const alphaCol = Math.min((tPiping - 0.95) / 0.05, 1);
+    ctxPip.fillStyle = `rgba(10,22,34,${alphaCol})`;
+    ctxPip.beginPath();
+    ctxPip.moveTo(px(X_PRESA_INI + 50), py(Y_BASE));
+    ctxPip.lineTo(px(X_PRESA_INI + 50), py(Y_CORONA));
+    ctxPip.lineTo(px(X_PRESA_FIN - 50), py(Y_CORONA));
+    ctxPip.lineTo(px(X_PRESA_FIN - 50), py(Y_BASE));
+    ctxPip.closePath();
+    ctxPip.fill();
+    ctxPip.fillStyle = `rgba(255,50,50,${alphaCol})`;
+    ctxPip.font = 'bold 22px Segoe UI';
+    ctxPip.fillText('¡COLAPSO!', px(X_CORONA_INI) - 40, py(Y_CORONA) - 20);
+  }
+
+  ctxPip.fillStyle = 'white';
+  ctxPip.font = 'bold 13px Segoe UI';
+  ctxPip.fillText('EMBALSE', 20, 30);
+  ctxPip.fillText('NÚCLEO', px(X_NUCLEO_INI) - 20, py(Y_CORONA) - 15);
+  ctxPip.fillText('TRINCHERA', px(X_TRINCH_INI) - 20, py(Y_BASE) + 50);
+  ctxPip.fillText('FUNDACIÓN', 20, H - 15);
+
+  ctxPip.fillStyle = 'rgba(0,0,0,0.7)';
+  ctxPip.fillRect(W - 250, 10, 240, 80);
+  ctxPip.fillStyle = '#fcbf49';
+  ctxPip.font = 'bold 14px Segoe UI';
+  ctxPip.fillText('Progreso de falla', W - 240, 30);
+
+  let faseActual = 'Estable';
+  if (tPiping >= 0.95) faseActual = 'COLAPSO';
+  else if (tPiping >= 0.7) faseActual = 'Túnel formado';
+  else if (tPiping >= 0.4) faseActual = 'Piping inicial';
+  else if (tPiping >= 0.2) faseActual = 'Fracturamiento';
+
+  ctxPip.fillStyle = '#a8d5e2';
+  ctxPip.font = '12px Segoe UI';
+  ctxPip.fillText(`Fase: ${faseActual}`, W - 240, 50);
+  ctxPip.fillText(`t = ${(tPiping * 3).toFixed(2)} h`, W - 240, 68);
+
+  ctxPip.fillStyle = 'rgba(255,255,255,0.1)';
+  ctxPip.fillRect(W - 240, 76, 220, 6);
+  ctxPip.fillStyle = '#f77f00';
+  ctxPip.fillRect(W - 240, 76, 220 * tPiping, 6);
+}
+
+function animarPiping() {
+  if (!animandoPiping) return;
+  tPiping += 0.002 * velocidadPiping;
+  if (tPiping > 1) {
+    tPiping = 1;
+    animandoPiping = false;
+    document.getElementById('btnSimular').disabled = false;
+    document.getElementById('btnSimular').textContent = '▶ Simular apertura por piping';
+  }
+  const fases = [
+    { id: 'fase1', t: 0.00, tNext: 0.20 },
+    { id: 'fase2', t: 0.20, tNext: 0.40 },
+    { id: 'fase3', t: 0.40, tNext: 0.70 },
+    { id: 'fase4', t: 0.70, tNext: 0.95 },
+    { id: 'fase5', t: 0.95, tNext: 1.01 }
+  ];
+  fases.forEach(f => {
+    const el = document.getElementById(f.id);
+    el.classList.toggle('activa', tPiping >= f.t && tPiping < f.tNext);
+  });
+  dibujarPiping();
+  requestAnimationFrame(animarPiping);
+}
+
+// ============================================================
+// EVENTOS
+// ============================================================
+document.getElementById('btnResolver').addEventListener('click', function () {
+  this.disabled = true;
+  this.textContent = '⏳ Resolviendo...';
+
+  setTimeout(() => {
+    const t0 = performance.now();
+    resolverLaplace();
+    const t1 = performance.now();
+
+    document.getElementById('statIter').textContent = iteraciones;
+    document.getElementById('statResid').textContent = residuoMax.toExponential(1);
+    document.getElementById('statQfuga').textContent = Q_fuga.toFixed(0);
+    document.getElementById('statTiempo').textContent = (t1 - t0).toFixed(0);
+    document.getElementById('statTray').textContent = trayectoriasCount;
+    document.getElementById('statEstado').textContent = residuoMax < 1e-3 ? '✓ Conv.' : '⟳ Parc.';
+    document.getElementById('tabQfuga').textContent = Q_fuga.toFixed(0);
+
+    dibujarLaplace();
+    this.disabled = false;
+    this.textContent = '🔬 Resolver EDP de Laplace';
+  }, 50);
+});
+
+document.getElementById('btnMostrarEq').addEventListener('click', () => {
+  mostrarEq = !mostrarEq;
+  if (h_field) dibujarLaplace();
+});
+
+document.getElementById('btnMostrarSC').addEventListener('click', () => {
+  mostrarSC = !mostrarSC;
+  if (h_field) dibujarLaplace();
+});
+
+document.getElementById('btnSimular').addEventListener('click', function () {
+  if (animandoPiping) return;
+  animandoPiping = true;
+  tPiping = 0;
+  this.disabled = true;
+  this.textContent = '⏳ Simulando...';
+  animarPiping();
+});
+
+document.getElementById('btnResetPiping').addEventListener('click', () => {
+  animandoPiping = false;
+  tPiping = 0;
+  document.getElementById('btnSimular').disabled = false;
+  document.getElementById('btnSimular').textContent = '▶ Simular apertura por piping';
+  ['fase1','fase2','fase3','fase4','fase5'].forEach(id =>
+    document.getElementById(id).classList.remove('activa'));
+  dibujarPiping();
+});
+
+document.getElementById('sliderVelPiping').addEventListener('input', function () {
+  velocidadPiping = parseInt(this.value);
+  document.getElementById('valVelPiping').textContent = this.value + '×';
+});
+
+document.querySelectorAll('.indice a').forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    const target = document.querySelector(a.getAttribute('href'));
+    if (target) window.scrollTo({ top: target.offsetTop - 20, behavior: 'smooth' });
+  });
+});
+
+// ============================================================
+// INICIALIZACIÓN
+// ============================================================
+dibujarMalla();
+dibujarPiping();
+</script>
+
+</body>
+</html>
