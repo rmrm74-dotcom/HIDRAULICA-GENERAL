@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Informe Monte Carlo · Cronograma del Proyecto</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+  :root{
+    --indigo:#6366f1; --violet:#8b5cf6; --pink:#ec4899; --amber:#f59e0b;
+    --emerald:#10b981; --cyan:#06b6d4; --red:#ef4444; --slate:#0f172a;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    font-family:'Segoe UI',system-ui,-apple-system,'Helvetica Neue',sans-serif;
+    background:#eef2f7; color:#1e293b; line-height:1.65; padding-bottom:60px;
+  }
+  header{
+    background:linear-gradient(120deg,#4f46e5 0%,#7c3aed 35%,#db2777 70%,#f59e0b 100%);
+    color:#fff; padding:52px 28px 68px; position:relative; overflow:hidden;
+    box-shadow:0 12px 40px rgba(79,70,229,.35);
+  }
+  header::after{
+    content:""; position:absolute; inset:0;
+    background:radial-gradient(circle at 15% 20%, rgba(255,255,255,.22), transparent 45%),
+               radial-gradient(circle at 85% 80%, rgba(255,255,255,.15), transparent 40%);
+  }
+  header .wrap{max-width:1200px;margin:0 auto;position:relative;z-index:2}
+  header h1{font-size:2.5rem;font-weight:800;letter-spacing:-.5px;margin-bottom:8px}
+  header p{font-size:1.08rem;opacity:.94;max-width:760px}
+  .badges{margin-top:22px;display:flex;flex-wrap:wrap;gap:10px}
+  .badge{
+    background:rgba(255,255,255,.18); backdrop-filter:blur(6px);
+    border:1px solid rgba(255,255,255,.35); padding:7px 16px; border-radius:999px;
+    font-size:.85rem; font-weight:600; letter-spacing:.3px;
+  }
+  main{max-width:1200px;margin:-38px auto 0;padding:0 20px;position:relative;z-index:5}
+  section{
+    background:#fff; border-radius:20px; padding:30px 32px; margin-bottom:28px;
+    box-shadow:0 6px 26px rgba(15,23,42,.08); border:1px solid #e2e8f0;
+  }
+  h2{
+    font-size:1.5rem; font-weight:800; color:#0f172a; margin-bottom:6px;
+    display:flex; align-items:center; gap:12px;
+  }
+  h2 .num{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:38px;height:38px;border-radius:12px;color:#fff;font-size:1rem;
+    background:linear-gradient(135deg,#6366f1,#8b5cf6);
+    box-shadow:0 4px 12px rgba(99,102,241,.4); flex:0 0 auto;
+  }
+  h3{font-size:1.05rem;font-weight:700;color:#334155;margin:22px 0 10px}
+  .sub{color:#64748b;font-size:.94rem;margin-bottom:22px}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:6px}
+  .kpi{
+    border-radius:16px; padding:20px 18px; color:#fff; position:relative; overflow:hidden;
+    box-shadow:0 8px 20px rgba(15,23,42,.14); transition:transform .18s ease;
+  }
+  .kpi:hover{transform:translateY(-4px)}
+  .kpi .lbl{font-size:.76rem;text-transform:uppercase;letter-spacing:1.1px;opacity:.9;font-weight:700}
+  .kpi .val{font-size:1.95rem;font-weight:800;line-height:1.15;margin-top:6px}
+  .kpi .unit{font-size:.85rem;font-weight:600;opacity:.9}
+  .k1{background:linear-gradient(135deg,#6366f1,#8b5cf6)}
+  .k2{background:linear-gradient(135deg,#0ea5e9,#06b6d4)}
+  .k3{background:linear-gradient(135deg,#10b981,#059669)}
+  .k4{background:linear-gradient(135deg,#f59e0b,#f97316)}
+  .k5{background:linear-gradient(135deg,#ec4899,#db2777)}
+  .k6{background:linear-gradient(135deg,#8b5cf6,#6d28d9)}
+  .k7{background:linear-gradient(135deg,#ef4444,#b91c1c)}
+  .k8{background:linear-gradient(135deg,#334155,#0f172a)}
+  .chart-box{position:relative;height:420px;margin-top:12px}
+  .chart-box.sm{height:360px}
+  .grid2{display:grid;grid-template-columns:1.15fr .85fr;gap:26px;align-items:start}
+  @media(max-width:900px){.grid2{grid-template-columns:1fr}}
+  table{width:100%;border-collapse:collapse;font-size:.9rem;margin-top:14px}
+  thead th{
+    background:linear-gradient(135deg,#4f46e5,#7c3aed); color:#fff;
+    padding:11px 12px; text-align:center; font-weight:700; font-size:.82rem;
+    letter-spacing:.4px; text-transform:uppercase;
+  }
+  thead th:first-child{border-radius:10px 0 0 0}
+  thead th:last-child{border-radius:0 10px 0 0}
+  tbody td{padding:10px 12px;text-align:center;border-bottom:1px solid #eef2f7}
+  tbody tr:nth-child(even){background:#f8fafc}
+  tbody tr:hover{background:#eef2ff}
+  .pill{display:inline-block;padding:3px 11px;border-radius:999px;font-size:.76rem;font-weight:700;color:#fff}
+  .p-high{background:#ef4444}.p-med{background:#f59e0b}.p-low{background:#10b981}
+  .bar-cell{position:relative;background:#f1f5f9;border-radius:6px;height:16px;width:100%;overflow:hidden}
+  .bar-fill{height:100%;border-radius:6px;background:linear-gradient(90deg,#6366f1,#ec4899)}
+  .callout{
+    border-radius:14px;padding:18px 22px;margin:18px 0;border-left:6px solid;
+    font-size:.95rem;
+  }
+  .c-info{background:#eff6ff;border-color:#3b82f6;color:#1e3a8a}
+  .c-warn{background:#fffbeb;border-color:#f59e0b;color:#78350f}
+  .c-good{background:#ecfdf5;border-color:#10b981;color:#064e3b}
+  .c-danger{background:#fef2f2;border-color:#ef4444;color:#7f1d1d}
+  .callout strong{font-weight:800}
+  ul.clean{list-style:none;padding-left:0}
+  ul.clean li{padding:9px 0 9px 30px;position:relative;border-bottom:1px dashed #e2e8f0}
+  ul.clean li:last-child{border-bottom:none}
+  ul.clean li::before{
+    content:"▸";position:absolute;left:8px;color:#6366f1;font-weight:900;font-size:1.05rem;
+  }
+  #loader{
+    position:fixed;inset:0;background:linear-gradient(135deg,#4f46e5,#7c3aed,#db2777);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    z-index:9999;color:#fff;transition:opacity .5s ease;
+  }
+  #loader.hide{opacity:0;pointer-events:none}
+  .spinner{
+    width:66px;height:66px;border:6px solid rgba(255,255,255,.28);
+    border-top-color:#fff;border-radius:50%;animation:spin 1s linear infinite;margin-bottom:22px;
+  }
+  @keyframes spin{to{transform:rotate(360deg)}}
+  #loader h2{font-size:1.35rem;font-weight:800;margin-bottom:6px;color:#fff}
+  #loader p{opacity:.9;font-size:.95rem}
+  footer{text-align:center;color:#94a3b8;font-size:.85rem;padding:30px 20px 0}
+  .tag{display:inline-block;background:#eef2ff;color:#4338ca;padding:2px 9px;border-radius:6px;font-size:.78rem;font-weight:700}
+</style>
+</head>
+<body>
+
+<div id="loader">
+  <div class="spinner"></div>
+  <h2>Ejecutando simulación Monte Carlo…</h2>
+  <p>100.000 iteraciones · 12 actividades · distribución PERT‑Beta</p>
+</div>
+
+<header>
+  <div class="wrap">
+    <h1>📊 Informe de Simulación Monte Carlo</h1>
+    <p>Análisis cuantitativo de riesgos del cronograma del proyecto mediante distribución PERT‑Beta
+       sobre la ruta crítica completa (12 actividades).</p>
+    <div class="badges">
+      <span class="badge">🔁 100.000 iteraciones</span>
+      <span class="badge">📐 Distribución PERT‑Beta</span>
+      <span class="badge">⛓️ 12 actividades críticas</span>
+      <span class="badge">🎯 Nivel de confianza 95 %</span>
+      <span class="badge">📈 Análisis de sensibilidad</span>
+      <span class="badge">✅ CDF corregida</span>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <section>
+    <h2><span class="num">1</span> Resumen Ejecutivo</h2>
+    <p class="sub">Indicadores clave obtenidos de las 100.000 simulaciones del cronograma.</p>
+    <div class="kpis" id="kpis"></div>
+    <div class="callout c-info" id="resumenTexto"></div>
+  </section>
+
+  <section>
+    <h2><span class="num">2</span> Metodología</h2>
+    <p class="sub">Modelo probabilístico aplicado a cada actividad de la ruta crítica.</p>
+    <ul class="clean">
+      <li><strong>Distribución PERT‑Beta:</strong> cada actividad se modela con los tres estimados
+          (optimista <em>o</em>, más probable <em>m</em>, pesimista <em>p</em>).</li>
+      <li><strong>Media:</strong> μ = (o + 4m + p) / 6 &nbsp;·&nbsp;
+          <strong>Parámetros Beta:</strong> α = 1 + 4(m−o)/(p−o) &nbsp;y&nbsp; β = 1 + 4(p−m)/(p−o).</li>
+      <li><strong>Varianza:</strong> σ² = (μ − o)(p − μ) / 7.</li>
+      <li><strong>Independencia:</strong> las 12 actividades son críticas y se asumen estadísticamente independientes.</li>
+      <li><strong>Duración total:</strong> T = Σ Xᵢ (suma de las 12 duraciones muestreadas).</li>
+      <li><strong>Motor de muestreo:</strong> método de Marsaglia‑Tsang para Gamma → razón de Gammas para Beta.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2><span class="num">3</span> Distribución de la Duración Total</h2>
+    <p class="sub">Histograma de frecuencias con superposición de la curva normal teórica (Gauss).</p>
+    <div class="chart-box"><canvas id="histChart"></canvas></div>
+    <div class="callout c-good" id="gaussTexto"></div>
+  </section>
+
+  <section>
+    <h2><span class="num">4</span> Distribución Acumulada (CDF)</h2>
+    <p class="sub">
+      Probabilidad de completar el proyecto en un plazo determinado o menos.
+      Incluye banda de confianza P10–P90 y marcadores en los percentiles clave.
+    </p>
+    <div class="chart-box"><canvas id="cdfChart"></canvas></div>
+    <div class="callout c-info" id="cdfTexto"></div>
+  </section>
+
+  <section>
+    <h2><span class="num">5</span> Análisis de Sensibilidad</h2>
+    <p class="sub">Correlación de cada actividad con la duración total del proyecto (diagrama de tornado)
+       y contribución porcentual a la varianza total.</p>
+    <div class="grid2">
+      <div>
+        <h3>🌪️ Diagrama de Tornado — Coeficiente de correlación</h3>
+        <div class="chart-box sm"><canvas id="tornadoChart"></canvas></div>
+      </div>
+      <div>
+        <h3>🥧 Contribución a la Varianza Total</h3>
+        <div class="chart-box sm"><canvas id="pieChart"></canvas></div>
+      </div>
+    </div>
+    <div class="callout c-warn" id="sensTexto"></div>
+  </section>
+
+  <section>
+    <h2><span class="num">6</span> Evaluación de Riesgos</h2>
+    <p class="sub">Curva de probabilidad de excedencia P(T &gt; t) y umbrales críticos de decisión.</p>
+    <div class="chart-box"><canvas id="riskChart"></canvas></div>
+    <h3>🎯 Umbrales de decisión</h3>
+    <table id="riskTable">
+      <thead>
+        <tr><th>Plazo objetivo</th><th>Prob. de cumplir ≤</th><th>Prob. de exceder &gt;</th><th>Nivel de riesgo</th></tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+    <div class="callout c-danger" id="riskTexto"></div>
+  </section>
+
+  <section>
+    <h2><span class="num">7</span> Estadísticas por Actividad</h2>
+    <p class="sub">Parámetros de entrada, momentos estadísticos y peso relativo en la incertidumbre total.</p>
+    <table id="actTable">
+      <thead>
+        <tr>
+          <th>Act.</th><th>Optimista</th><th>M. Probable</th><th>Pesimista</th>
+          <th>Media (días)</th><th>Desv. Est.</th><th>Correlación</th>
+          <th>Contribución</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2><span class="num">8</span> Conclusiones y Recomendaciones</h2>
+    <div id="conclusiones"></div>
+  </section>
+
+  <footer>
+    Informe generado automáticamente · Simulación Monte Carlo de 100.000 iteraciones ·
+    Distribución PERT‑Beta · Modelo de ruta crítica (CPM probabilístico)
+  </footer>
+</main>
+
+<script>
+/* =====================================================================
+   1. DATOS DE ENTRADA
+   ===================================================================== */
+const ACTIVIDADES = [
+  {id:1,  o:5,  m:7,  p:10},
+  {id:2,  o:3,  m:6,  p:8 },
+  {id:3,  o:4,  m:8,  p:12},
+  {id:4,  o:7,  m:12, p:15},
+  {id:5,  o:14, m:22, p:35},
+  {id:6,  o:6,  m:11, p:15},
+  {id:7,  o:10, m:14, p:20},
+  {id:8,  o:12, m:22, p:30},
+  {id:9,  o:14, m:18, p:25},
+  {id:10, o:12, m:20, p:25},
+  {id:11, o:14, m:23, p:34},
+  {id:12, o:20, m:23, p:30}
+];
+const N = 100000;
+const K = ACTIVIDADES.length;
+
+/* =====================================================================
+   2. GENERADORES ALEATORIOS
+   ===================================================================== */
+function randn(){
+  let u = 0, v = 0;
+  while(u === 0) u = Math.random();
+  while(v === 0) v = Math.random();
+  return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+}
+function gammaSample(a){
+  const d = a - 1/3;
+  const c = 1 / Math.sqrt(9 * d);
+  for(;;){
+    let x, v;
+    do { x = randn(); v = 1 + c * x; } while (v <= 0);
+    v = v * v * v;
+    const u = Math.random();
+    if (u < 1 - 0.0331 * x * x * x * x) return d * v;
+    if (Math.log(u) < 0.5 * x * x + d * (1 - v + Math.log(v))) return d * v;
+  }
+}
+function betaSample(a, b){
+  const x = gammaSample(a);
+  const y = gammaSample(b);
+  return x / (x + y);
+}
+
+/* =====================================================================
+   3. PARÁMETROS ANALÍTICOS
+   ===================================================================== */
+ACTIVIDADES.forEach(a=>{
+  a.alpha = 1 + 4 * (a.m - a.o) / (a.p - a.o);
+  a.beta  = 1 + 4 * (a.p - a.m) / (a.p - a.o);
+  a.mean  = (a.o + 4 * a.m + a.p) / 6;
+  a.sd    = Math.sqrt(((a.mean - a.o) * (a.p - a.mean)) / 7);
+});
+
+/* =====================================================================
+   4. SIMULACIÓN
+   ===================================================================== */
+function runSimulation(){
+  const data   = new Float64Array(N * K);
+  const totals = new Float64Array(N);
+
+  for (let i = 0; i < N; i++){
+    let suma = 0;
+    const base = i * K;
+    for (let j = 0; j < K; j++){
+      const a = ACTIVIDADES[j];
+      const b = betaSample(a.alpha, a.beta);
+      const v = a.o + (a.p - a.o) * b;
+      data[base + j] = v;
+      suma += v;
+    }
+    totals[i] = suma;
+  }
+  return {data, totals};
+}
+
+/* =====================================================================
+   5. ESTADÍSTICOS
+   ===================================================================== */
+function percentil(sorted, q){
+  const idx = (sorted.length - 1) * q;
+  const lo = Math.floor(idx), hi = Math.ceil(idx);
+  if (lo === hi) return sorted[lo];
+  return sorted[lo] + (sorted[hi] - sorted[lo]) * (idx - lo);
+}
+
+function analizar(totals, data){
+  const sorted = Float64Array.from(totals).sort();
+
+  let sum = 0;
+  for (let i = 0; i < N; i++) sum += totals[i];
+  const media = sum / N;
+
+  let v = 0;
+  for (let i = 0; i < N; i++){ const d = totals[i] - media; v += d * d; }
+  const varianza = v / (N - 1);
+  const sd = Math.sqrt(varianza);
+
+  const stats = {
+    media, sd, varianza,
+    min: sorted[0], max: sorted[N-1],
+    p5:  percentil(sorted, .05),
+    p10: percentil(sorted, .10),
+    p25: percentil(sorted, .25),
+    p50: percentil(sorted, .50),
+    p75: percentil(sorted, .75),
+    p80: percentil(sorted, .80),
+    p85: percentil(sorted, .85),
+    p90: percentil(sorted, .90),
+    p95: percentil(sorted, .95),
+    p99: percentil(sorted, .99),
+    sorted
+  };
+
+  const corrs = [];
+  for (let j = 0; j < K; j++){
+    let sx = 0;
+    for (let i = 0; i < N; i++) sx += data[i * K + j];
+    const mx = sx / N;
+    let cov = 0, vx = 0;
+    for (let i = 0; i < N; i++){
+      const dx = data[i * K + j] - mx;
+      const dy = totals[i] - media;
+      cov += dx * dy;
+      vx  += dx * dx;
+    }
+    cov /= (N - 1); vx /= (N - 1);
+    corrs.push(cov / Math.sqrt(vx * varianza));
+  }
+  stats.corrs = corrs;
+  return stats;
+}
+
+/* =====================================================================
+   6. GRÁFICOS
+   ===================================================================== */
+Chart.defaults.font.family = "'Segoe UI', system-ui, sans-serif";
+Chart.defaults.font.size = 12;
+Chart.defaults.color = '#475569';
+
+let histChart, cdfChart, tornadoChart, pieChart, riskChart;
+
+function dibujarHistograma(stats, totals){
+  const bins = 70;
+  const min = stats.min, max = stats.max;
+  const w = (max - min) / bins;
+  const counts = new Array(bins).fill(0);
+  for (let i = 0; i < N; i++){
+    let b = Math.floor((totals[i] - min) / w);
+    if (b < 0) b = 0;
+    if (b >= bins) b = bins - 1;
+    counts[b]++;
+  }
+  const labels = [], normal = [];
+  for (let b = 0; b < bins; b++){
+    const centro = min + w * (b + 0.5);
+    labels.push(centro.toFixed(1));
+    const z = (centro - stats.media) / stats.sd;
+    const pdf = Math.exp(-0.5 * z * z) / (stats.sd * Math.sqrt(2 * Math.PI));
+    normal.push(pdf * N * w);
+  }
+
+  const ctx = document.getElementById('histChart').getContext('2d');
+  const grad = ctx.createLinearGradient(0, 0, 0, 400);
+  grad.addColorStop(0, 'rgba(99,102,241,0.95)');
+  grad.addColorStop(1, 'rgba(139,92,246,0.45)');
+
+  histChart = new Chart(ctx, {
+    data: {
+      labels,
+      datasets: [
+        {
+          type: 'bar',
+          label: 'Frecuencia simulada',
+          data: counts,
+          backgroundColor: grad,
+          borderColor: 'rgba(79,70,229,1)',
+          borderWidth: 0.5,
+          barPercentage: 1.0,
+          categoryPercentage: 1.0,
+          order: 2
+        },
+        {
+          type: 'line',
+          label: 'Curva Normal (Gauss)',
+          data: normal,
+          borderColor: '#ef4444',
+          backgroundColor: 'transparent',
+          borderWidth: 3,
+          pointRadius: 0,
+          tension: 0.35,
+          order: 1
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { position: 'top', labels: { usePointStyle: true, padding: 18, font: { weight: '600' } } },
+        tooltip: {
+          backgroundColor: 'rgba(15,23,42,.94)',
+          padding: 12,
+          cornerRadius: 10,
+          callbacks: {
+            title: (it) => `Duración ≈ ${it[0].label} días`,
+            label: (c) => `${c.dataset.label}: ${Math.round(c.parsed.y).toLocaleString('es-ES')}`
+          }
+        }
+      },
+      scales: {
+        x: {
+          title: { display: true, text: 'Duración total del proyecto (días)', font: { weight: '700' } },
+          ticks: { maxTicksLimit: 22, maxRotation: 0 },
+          grid: { display: false }
+        },
+        y: {
+          title: { display: true, text: 'Número de simulaciones', font: { weight: '700' } },
+          grid: { color: 'rgba(148,163,184,.16)' }
+        }
+      }
+    }
+  });
+}
+
+/* ---------- CDF CORREGIDA: eje X lineal + banda P10–P90 + marcadores ---------- */
+function dibujarCDF(stats){
+  const sorted = stats.sorted;
+  const min = stats.min, max = stats.max;
+  const pasos = 400;
+  const curva = [];       // {x, y} curva acumulada real
+  const bandaInf = [];    // {x, y} P10 como línea (y=10)
+  const bandaSup = [];    // {x, y} P90 como línea (y=90)
+  let ptr = 0;
+
+  for (let s = 0; s <= pasos; s++){
+    const t = min + (max - min) * s / pasos;
+    while (ptr < N && sorted[ptr] <= t) ptr++;
+    curva.push({ x: +t.toFixed(2), y: (ptr / N) * 100 });
+  }
+
+  // Banda vertical P10–P90 (sombreada mediante líneas horizontales)
+  const ancho = 2;
+  // Línea P10 (horizontal en y=10)
+  bandaInf.push({ x: +stats.p10.toFixed(2), y: 0 });
+  bandaInf.push({ x: +stats.p10.toFixed(2), y: 100 });
+  // Línea P90 (horizontal en y=90)
+  bandaSup.push({ x: +stats.p90.toFixed(2), y: 0 });
+  bandaSup.push({ x: +stats.p90.toFixed(2), y: 100 });
+
+  // Marcadores de percentiles clave
+  const pcts = [
+    { p: 'P50', v: stats.p50 },
+    { p: 'P80', v: stats.p80 },
+    { p: 'P85', v: stats.p85 },
+    { p: 'P90', v: stats.p90 },
+    { p: 'P95', v: stats.p95 }
+  ];
+  const marcadores = pcts.map(o => ({
+    x: +o.v.toFixed(2),
+    y: (o.v === stats.p50) ? 50 :
+       (o.v === stats.p80) ? 80 :
+       (o.v === stats.p85) ? 85 :
+       (o.v === stats.p90) ? 90 :
+       (o.v === stats.p95) ? 95 : 0,
+    label: o.p
+  }));
+
+  const ctx = document.getElementById('cdfChart').getContext('2d');
+  const grad = ctx.createLinearGradient(0, 0, 0, 420);
+  grad.addColorStop(0, 'rgba(6,182,212,0.35)');
+  grad.addColorStop(1, 'rgba(6,182,212,0.02)');
+
+  cdfChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      datasets: [
+        /* Curva principal */
+        {
+          label: 'P(T ≤ t) — Distribución acumulada',
+          data: curva,
+          borderColor: '#0891b2',
+          backgroundColor: grad,
+          borderWidth: 3.5,
+          fill: true,
+          pointRadius: 0,
+          tension: 0.15,
+          parsing: false,
+          order: 3
+        },
+        /* Línea vertical P10 */
+        {
+          label: 'P10',
+          data: bandaInf,
+          borderColor: 'rgba(245,158,11,0.9)',
+          borderWidth: 2,
+          borderDash: [6, 4],
+          pointRadius: 0,
+          parsing: false,
+          fill: false,
+          order: 2
+        },
+        /* Línea vertical P90 */
+        {
+          label: 'P90',
+          data: bandaSup,
+          borderColor: 'rgba(245,158,11,0.9)',
+          borderWidth: 2,
+          borderDash: [6, 4],
+          pointRadius: 0,
+          parsing: false,
+          fill: false,
+          order: 2
+        },
+        /* Marcadores de percentiles */
+        {
+          label: 'Percentiles clave',
+          type: 'scatter',
+          data: marcadores,
+          backgroundColor: '#ef4444',
+          borderColor: '#fff',
+          borderWidth: 2,
+          pointRadius: 6,
+          pointHoverRadius: 9,
+          parsing: false,
+          order: 1
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'nearest', intersect: false },
+      plugins: {
+        legend: {
+          position: 'top',
+          labels: { usePointStyle: true, padding: 16, font: { weight: '600' } }
+        },
+        tooltip: {
+          backgroundColor: 'rgba(15,23,42,.94)',
+          padding: 12,
+          cornerRadius: 10,
+          callbacks: {
+            title: (it) => `Plazo: ${(+it[0].parsed.x).toFixed(1)} días`,
+            label: (c) => {
+              if (c.dataset.type === 'scatter')
+                return `${c.raw.label}: ${c.parsed.y.toFixed(2)} %`;
+              if (c.dataset.label === 'P10' || c.dataset.label === 'P90')
+                return `${c.dataset.label} = ${c.parsed.x.toFixed(1)} días`;
+              return `P(T ≤ t) = ${c.parsed.y.toFixed(2)} %`;
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          type: 'linear',
+          min: min,
+          max: max,
+          title: { display: true, text: 'Duración del proyecto (días)', font: { weight: '700' } },
+          ticks: { maxTicksLimit: 20, maxRotation: 0 },
+          grid: { display: false }
+        },
+        y: {
+          title: { display: true, text: 'Probabilidad acumulada (%)', font: { weight: '700' } },
+          min: 0, max: 100,
+          grid: { color: 'rgba(148,163,184,.16)' }
+        }
+      }
+    }
+  });
+}
+
+function dibujarTornado(stats){
+  const pares = ACTIVIDADES.map((a, j) => ({
+    nombre: `Act. ${a.id}`,
+    corr: stats.corrs[j]
+  })).sort((x, y) => x.corr - y.corr);
+
+  const ctx = document.getElementById('tornadoChart').getContext('2d');
+  const colores = pares.map(p => {
+    if (p.corr > 0.35) return 'rgba(239,68,68,0.9)';
+    if (p.corr > 0.22) return 'rgba(245,158,11,0.9)';
+    return 'rgba(16,185,129,0.9)';
+  });
+
+  tornadoChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: pares.map(p => p.nombre),
+      datasets: [{
+        label: 'Correlación con la duración total',
+        data: pares.map(p => p.corr),
+        backgroundColor: colores,
+        borderRadius: 6,
+        borderSkipped: false
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: 'rgba(15,23,42,.94)',
+          padding: 12, cornerRadius: 10,
+          callbacks: { label: (c) => `r = ${c.parsed.x.toFixed(4)}  ·  contribución ${(c.parsed.x*c.parsed.x*100).toFixed(1)} %` }
+        }
+      },
+      scales: {
+        x: {
+          title: { display: true, text: 'Coeficiente de correlación (r)', font: { weight: '700' } },
+          min: 0,
+          grid: { color: 'rgba(148,163,184,.16)' }
+        },
+        y: { grid: { display: false }, ticks: { font: { weight: '700' } } }
+      }
+    }
+  });
+}
+
+function dibujarPie(stats){
+  const items = ACTIVIDADES.map((a, j) => ({
+    nombre: `Act. ${a.id}`,
+    contrib: stats.corrs[j] * stats.corrs[j] * 100
+  })).sort((x, y) => y.contrib - x.contrib);
+
+  const top = items.slice(0, 5);
+  const resto = items.slice(5).reduce((s, x) => s + x.contrib, 0);
+  const labels = top.map(t => t.nombre).concat(['Resto (7 act.)']);
+  const values = top.map(t => +t.contrib.toFixed(2)).concat([+resto.toFixed(2)]);
+
+  const ctx = document.getElementById('pieChart').getContext('2d');
+  pieChart = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels,
+      datasets: [{
+        data: values,
+        backgroundColor: ['#ef4444','#f59e0b','#ec4899','#8b5cf6','#06b6d4','#cbd5e1'],
+        borderColor: '#fff',
+        borderWidth: 3,
+        hoverOffset: 12
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: '56%',
+      plugins: {
+        legend: { position: 'bottom', labels: { usePointStyle: true, padding: 12, font: { size: 11, weight: '600' } } },
+        tooltip: {
+          backgroundColor: 'rgba(15,23,42,.94)',
+          padding: 12, cornerRadius: 10,
+          callbacks: { label: (c) => `${c.label}: ${c.parsed.toFixed(2)} % de la varianza` }
+        }
+      }
+    }
+  });
+}
+
+function dibujarRiesgo(stats){
+  const sorted = stats.sorted;
+  const min = stats.min, max = stats.max;
+  const pasos = 240;
+  const puntos = [];
+  let ptr = 0;
+
+  for (let s = 0; s <= pasos; s++){
+    const t = min + (max - min) * s / pasos;
+    while (ptr < N && sorted[ptr] <= t) ptr++;
+    puntos.push({ x: +t.toFixed(2), y: (1 - ptr / N) * 100 });
+  }
+
+  const ctx = document.getElementById('riskChart').getContext('2d');
+  const grad = ctx.createLinearGradient(0, 0, 0, 420);
+  grad.addColorStop(0, 'rgba(239,68,68,0.40)');
+  grad.addColorStop(1, 'rgba(239,68,68,0.02)');
+
+  riskChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      datasets: [{
+        label: 'P(T > t) — Probabilidad de excedencia',
+        data: puntos,
+        borderColor: '#dc2626',
+        backgroundColor: grad,
+        borderWidth: 3,
+        fill: true,
+        pointRadius: 0,
+        tension: 0.2,
+        parsing: false
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'top', labels: { usePointStyle: true, padding: 16, font: { weight: '600' } } },
+        tooltip: {
+          backgroundColor: 'rgba(15,23,42,.94)',
+          padding: 12, cornerRadius: 10,
+          callbacks: {
+            title: (it) => `Plazo objetivo: ${(+it[0].parsed.x).toFixed(1)} días`,
+            label: (c) => `Riesgo de excederlo: ${c.parsed.y.toFixed(2)} %`
+          }
+        }
+      },
+      scales: {
+        x: {
+          type: 'linear',
+          min: min, max: max,
+          title: { display: true, text: 'Plazo objetivo (días)', font: { weight: '700' } },
+          ticks: { maxTicksLimit: 20, maxRotation: 0 },
+          grid: { display: false }
+        },
+        y: {
+          title: { display: true, text: 'Probabilidad de excedencia (%)', font: { weight: '700' } },
+          min: 0, max: 100,
+          grid: { color: 'rgba(148,163,184,.16)' }
+        }
+      }
+    }
+  });
+}
+
+/* =====================================================================
+   7. RENDERIZADO HTML
+   ===================================================================== */
+function fmt(n, d = 1){ return n.toLocaleString('es-ES', {minimumFractionDigits: d, maximumFractionDigits: d}); }
+
+function renderKPIs(stats){
+  const items = [
+    { cls:'k1', lbl:'Duración media',   val: fmt(stats.media),  unit:'días' },
+    { cls:'k2', lbl:'Mediana (P50)',    val: fmt(stats.p50),    unit:'días' },
+    { cls:'k3', lbl:'Desv. estándar',   val: fmt(stats.sd, 2),  unit:'días' },
+    { cls:'k4', lbl:'P80 · Compromiso', val: fmt(stats.p80),    unit:'días' },
+    { cls:'k5', lbl:'P90 · Conservador',val: fmt(stats.p90),    unit:'días' },
+    { cls:'k6', lbl:'P95 · Alta conf.', val: fmt(stats.p95),    unit:'días' },
+    { cls:'k7', lbl:'Escenario pesimista', val: fmt(stats.max), unit:'días' },
+    { cls:'k8', lbl:'Escenario optimista', val: fmt(stats.min), unit:'días' }
+  ];
+  document.getElementById('kpis').innerHTML = items.map(i => `
+    <div class="kpi ${i.cls}">
+      <div class="lbl">${i.lbl}</div>
+      <div class="val">${i.val}</div>
+      <div class="unit">${i.unit}</div>
+    </div>`).join('');
+}
+
+function renderTextos(stats){
+  document.getElementById('resumenTexto').innerHTML = `
+    La simulación de <strong>100.000 escenarios</strong> arroja una duración esperada del proyecto de
+    <strong>${fmt(stats.media)} días</strong>, con una desviación estándar de <strong>${fmt(stats.sd,2)} días</strong>.
+    El rango de resultados va desde <strong>${fmt(stats.min)}</strong> hasta <strong>${fmt(stats.max)} días</strong>,
+    lo que evidencia una incertidumbre total de <strong>${fmt(stats.max - stats.min)} días</strong> entre el mejor y el peor escenario.
+    Para asegurar un nivel de confianza del 90 % sería necesario comprometer un plazo de
+    <strong>${fmt(stats.p90)} días</strong>.
+  `;
+
+  document.getElementById('gaussTexto').innerHTML = `
+    ✅ El histograma presenta una forma <strong>aproximadamente normal (campana de Gauss)</strong>,
+    consecuencia del Teorema Central del Límite al sumar 12 variables aleatorias independientes.
+    La curva roja representa la distribución normal teórica N(${fmt(stats.media)}, ${fmt(stats.sd,2)}²),
+    que ajusta con notable precisión al histograma simulado.
+  `;
+
+  document.getElementById('cdfTexto').innerHTML = `
+    📈 <strong>Lectura corregida de la curva acumulada:</strong> existe un <strong>50 %</strong> de probabilidad de terminar antes de
+    <strong>${fmt(stats.p50)} días</strong>; un <strong>80 %</strong> antes de <strong>${fmt(stats.p80)} días</strong>;
+    y un <strong>95 %</strong> antes de <strong>${fmt(stats.p95)} días</strong>.
+    La <strong>banda naranja punteada</strong> delimita el rango P10–P90, es decir, el 80 % central de los escenarios posibles.
+    Los <strong>puntos rojos</strong> marcan visualmente los percentiles clave sobre la curva.
+  `;
+
+  const orden = ACTIVIDADES.map((a,j)=>({id:a.id, c:stats.corrs[j]}))
+                            .sort((x,y)=>y.c-x.c);
+  const top3 = orden.slice(0,3);
+  const sumaTop3 = top3.reduce((s,x)=>s+x.c*x.c*100,0);
+
+  document.getElementById('sensTexto').innerHTML = `
+    ⚠️ El análisis de sensibilidad muestra que las actividades
+    <strong>${top3.map(t=>'N.º '+t.id).join(', ')}</strong> concentran el
+    <strong>${fmt(sumaTop3)} %</strong> de la varianza total del proyecto.
+    Estas actividades deben ser objeto de <strong>control intensivo</strong>, planes de contingencia
+    y asignación preferente de recursos, ya que cualquier desviación en ellas impacta directamente
+    la fecha de entrega.
+  `;
+}
+
+function probabilidadExceder(stats, t){
+  const s = stats.sorted;
+  let lo = 0, hi = N;
+  while (lo < hi){
+    const mid = (lo + hi) >> 1;
+    if (s[mid] <= t) lo = mid + 1; else hi = mid;
+  }
+  return (1 - lo / N) * 100;
+}
+function probabilidadMenor(stats, t){
+  return 100 - probabilidadExceder(stats, t);
+}
+
+function renderRiskTable(stats){
+  const umbrales = [180, 185, 190, 195, 200, 205, 210, 215, 220];
+  const tbody = document.querySelector('#riskTable tbody');
+  tbody.innerHTML = umbrales.map(t => {
+    const pMenor = probabilidadMenor(stats, t);
+    const pMayor = 100 - pMenor;
+    let cls = 'p-low', txt = 'BAJO';
+    if (pMayor >= 50)      { cls = 'p-high'; txt = 'MUY ALTO'; }
+    else if (pMayor >= 25) { cls = 'p-high'; txt = 'ALTO'; }
+    else if (pMayor >= 10) { cls = 'p-med';  txt = 'MEDIO'; }
+    return `<tr>
+      <td><strong>${t} días</strong></td>
+      <td style="color:#059669;font-weight:700">${fmt(pMenor,2)} %</td>
+      <td style="color:#dc2626;font-weight:700">${fmt(pMayor,2)} %</td>
+      <td><span class="pill ${cls}">${txt}</span></td>
+    </tr>`;
+  }).join('');
+
+  const p200 = probabilidadExceder(stats, 200);
+  const p210 = probabilidadExceder(stats, 210);
+  const p220 = probabilidadExceder(stats, 220);
+
+  document.getElementById('riskTexto').innerHTML = `
+    🚨 <strong>Evaluación de riesgo:</strong> la probabilidad de exceder los <strong>200 días</strong> es del
+    <strong>${fmt(p200,2)} %</strong>; de superar los <strong>210 días</strong>, del <strong>${fmt(p210,2)} %</strong>;
+    y de rebasar los <strong>220 días</strong>, apenas del <strong>${fmt(p220,2)} %</strong>.
+    Se recomienda fijar el compromiso contractual en <strong>${fmt(stats.p85)}–${fmt(stats.p90)} días</strong>
+    para mantener el riesgo de incumplimiento por debajo del 10–15 %.
+  `;
+}
+
+function renderTablaActividades(stats){
+  const filas = ACTIVIDADES.map((a, j) => {
+    const contrib = stats.corrs[j] * stats.corrs[j] * 100;
+    return {
+      id: a.id, o: a.o, m: a.m, p: a.p,
+      mean: a.mean, sd: a.sd,
+      corr: stats.corrs[j], contrib
+    };
+  }).sort((x, y) => y.contrib - x.contrib);
+
+  document.querySelector('#actTable tbody').innerHTML = filas.map(f => `
+    <tr>
+      <td><strong>${f.id}</strong></td>
+      <td>${f.o}</td>
+      <td>${f.m}</td>
+      <td>${f.p}</td>
+      <td><strong>${fmt(f.mean,2)}</strong></td>
+      <td>${fmt(f.sd,3)}</td>
+      <td>${f.corr.toFixed(4)}</td>
+      <td style="min-width:170px">
+        <div style="display:flex;align-items:center;gap:9px">
+          <div class="bar-cell"><div class="bar-fill" style="width:${Math.min(100, f.contrib*3.5)}%"></div></div>
+          <span style="font-weight:700;color:#4f46e5;font-size:.82rem;white-space:nowrap">${fmt(f.contrib,2)}%</span>
+        </div>
+      </td>
+    </tr>`).join('');
+}
+
+function renderConclusiones(stats){
+  const orden = ACTIVIDADES.map((a,j)=>({id:a.id, c:stats.corrs[j], contrib: stats.corrs[j]**2*100}))
+                            .sort((x,y)=>y.contrib-x.contrib);
+  const top3 = orden.slice(0,3);
+
+  document.getElementById('conclusiones').innerHTML = `
+    <div class="callout c-good">
+      <strong>✔ Conclusión principal:</strong> la duración más probable del proyecto es de
+      <strong>${fmt(stats.media)} días</strong>, pero la incertidumbre es significativa
+      (±${fmt(stats.sd,1)} días, 1σ). No es prudente comprometer una fecha basada únicamente en el
+      valor esperado: existe ~${fmt(probabilidadExceder(stats, Math.round(stats.media)),1)} % de probabilidad de superarla.
+    </div>
+
+    <h3>🔑 Hallazgos clave</h3>
+    <ul class="clean">
+      <li><strong>Distribución normal:</strong> el resultado se comporta como una campana de Gauss
+          N(${fmt(stats.media)}, ${fmt(stats.sd,2)}²), validando el uso del Teorema Central del Límite.</li>
+      <li><strong>Rango P10–P90:</strong> entre <strong>${fmt(stats.p10)}</strong> y
+          <strong>${fmt(stats.p90)} días</strong> se cubre el 80 % de los escenarios posibles.</li>
+      <li><strong>Concentración del riesgo:</strong> las actividades
+          <strong>${top3.map(t=>'N.º '+t.id).join(', ')}</strong> explican el
+          <strong>${fmt(top3.reduce((s,t)=>s+t.contrib,0),1)} %</strong> de la varianza total.</li>
+      <li><strong>Cola derecha:</strong> existe un <strong>${fmt(probabilidadExceder(stats,210),2)} %</strong>
+          de probabilidad de exceder los 210 días, escenario que debe contemplarse en el plan de contingencia.</li>
+    </ul>
+
+    <h3>💡 Recomendaciones</h3>
+    <ul class="clean">
+      <li><strong>Compromiso de plazo:</strong> fijar la fecha de entrega en
+          <strong>${fmt(stats.p85)} días (P85)</strong> para un riesgo de incumplimiento del 15 %,
+          o en <strong>${fmt(stats.p90)} días (P90)</strong> para reducirlo al 10 %.</li>
+      <li><strong>Reserva de contingencia:</strong> añadir un buffer de
+          <strong>${fmt(stats.p90 - stats.media)} días</strong> sobre la media (equivalente al P90).</li>
+      <li><strong>Priorizar el control</strong> de las actividades ${top3.map(t=>'N.º '+t.id).join(', ')}
+          mediante seguimiento semanal, recursos dedicados y planes de recuperación.</li>
+      <li><strong>Reducir la incertidumbre</strong> en las estimaciones pesimistas de las actividades
+          5, 8 y 11: una mejora en sus rangos (o–p) reduciría drásticamente la varianza global.</li>
+      <li><strong>Monitorización continua:</strong> actualizar la simulación al cierre de cada hito
+          para recalibrar las distribuciones con datos reales (enfoque bayesiano).</li>
+    </ul>
+  `;
+}
+
+/* =====================================================================
+   8. ORQUESTACIÓN
+   ===================================================================== */
+function main(){
+  const t0 = performance.now();
+  const {data, totals} = runSimulation();
+  const stats = analizar(totals, data);
+  const t1 = performance.now();
+
+  console.log(`Simulación completada en ${(t1-t0).toFixed(0)} ms`);
+
+  renderKPIs(stats);
+  renderTextos(stats);
+  renderRiskTable(stats);
+  renderTablaActividades(stats);
+  renderConclusiones(stats);
+
+  dibujarHistograma(stats, totals);
+  dibujarCDF(stats);
+  dibujarTornado(stats);
+  dibujarPie(stats);
+  dibujarRiesgo(stats);
+
+  document.getElementById('loader').classList.add('hide');
+  setTimeout(() => document.getElementById('loader').remove(), 600);
+}
+
+window.addEventListener('load', () => setTimeout(main, 120));
+</script>
+</body>
+</html>
